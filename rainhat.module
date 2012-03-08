@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * @file
+ * A module which allows Fedora Repository content to be displayed in Drupal, 
+ * and Drupal content to be stored in a Fedora Repository.
+ */ 
+ 
+/**
+ * Implement hook_menu().
+ */
+function rainhat_menu() {
+
+  $items = array();
+
+  //This is the settings admin menu item. 
+  //This is where module wide config settings are set. 
+  $items['admin/config/system/rainhat'] = array(
+    'title' => 'Fedora Connection Defaults',
+    'description' => 'Set options for the rainhat module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_admin_form'),
+    'access arguments' => array('administer rainhat'),
+    'file' => 'rainhat.moduleadmin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  
+  return $items;
+
+}
+
+/**
+ * Implement hook_permission().
+ */
+function rainhat_permission() {
+
+  $permissions = array();
+  
+  $permissions['administer rainhat'] = array (
+      'title' => t('Administer the Rainhat module defaults.'), 
+      'description' => t('Change the Fedora Connection defaults for the Rainhat Module.'),
+      'restrict access' => TRUE,
+  );
+  
+  return $permissions;
+  
+}

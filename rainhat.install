@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * @file
+ * Defines the hooks for the rainhat module which are called at install, 
+ * enable, etc.
+ */
+
+ 
+/**
+ * Define the default Fedora Connection URL.
+ *  -The variable used: rainhat_default_fedora_url
+ */
+define('RAINHAT_DEFAULT_FEDORA_URL', 'http://localhost:8080/fedora');
+
+/**
+ * Define the default Fedora Admin Username.
+ *  -The variable used: rainhat_default_fedora_admin_username
+ */
+define('RAINHAT_DEFAULT_FEDORA_ADMIN_USERNAME', 'fedoraAdmin');
+
+/**
+ * Define the default Fedora Admin Password.
+ *  -The variable used: rainhat_default_fedora_admin_password
+ */
+define('RAINHAT_DEFAULT_FEDORA_ADMIN_PASSWORD', 'fedoraAdmin');
+
+
+/**
+ * Implement hook_enable().
+ */
+function rainhat_enable() {
+
+    //If the default fedora url has not been set, set it.
+    if (is_null(variable_get('rainhat_default_fedora_url'))) {
+      variable_set('rainhat_default_fedora_url', RAINHAT_DEFAULT_FEDORA_URL);
+    }
+    
+    //If the default fedora admin has not been set, set it.
+    if (is_null(variable_get('rainhat_default_fedora_admin_username'))) {
+      variable_set('rainhat_default_fedora_admin_username', RAINHAT_DEFAULT_FEDORA_ADMIN_USERNAME);
+    }
+
+    //If the default fedora admin password has not been set, set it.
+    if (is_null(variable_get('rainhat_default_fedora_admin_password'))) {
+      variable_set('rainhat_default_fedora_admin_password', RAINHAT_DEFAULT_FEDORA_ADMIN_PASSWORD);
+    }
+}
+
+/**
+ * Implement hook_install().
+ */
+function rainhat_install() {
+
+}
+
+
+/**
+ * Implement hook_uninstall().
+ */
+function rainhat_uninstall() {
+
+  variable_del('rainhat_default_fedora_url');
+  variable_del('rainhat_default_fedora_admin_username');
+  variable_del('rainhat_default_fedora_admin_password');
+
+}
