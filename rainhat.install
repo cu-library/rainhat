@@ -2,11 +2,10 @@
 
 /**
  * @file
- * Defines the hooks for the rainhat module which are called at install, 
+ * Defines the hooks for the rainhat module which are called at install,
  * enable, etc.
  */
 
- 
 /**
  * Define the default Fedora Connection URL.
  *  -The variable used: rainhat_default_fedora_url
@@ -27,6 +26,56 @@ define('RAINHAT_DEFAULT_FEDORA_ADMIN_PASSWORD', 'fedoraAdmin');
 
 
 /**
+ * Implements hook_schema().
+ */
+ 
+function rainhat_schema() {
+  $schema['rainhat_fedora_connection'] = array(
+    'description' => 'Fedora Connection',
+    'fields' => array(
+
+      'id' => array(
+        'description' => 'id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'Connection Name',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'url' => array(
+        'description' => 'Connection URL',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'admin_username' => array(
+        'description' => 'Admin Username',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'admin_password' => array(
+        'description' => 'Admin Password',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+    ),
+    'unique keys' => array(
+      'name' => array('name'),
+    ), 
+    'primary key' => array('id'),
+  );
+  return $schema;
+}
+
+/**
  * Implement hook_enable().
  */
 function rainhat_enable() {
@@ -35,7 +84,7 @@ function rainhat_enable() {
     if (is_null(variable_get('rainhat_default_fedora_url'))) {
       variable_set('rainhat_default_fedora_url', RAINHAT_DEFAULT_FEDORA_URL);
     }
-    
+
     //If the default fedora admin has not been set, set it.
     if (is_null(variable_get('rainhat_default_fedora_admin_username'))) {
       variable_set('rainhat_default_fedora_admin_username', RAINHAT_DEFAULT_FEDORA_ADMIN_USERNAME);

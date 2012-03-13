@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Forms to administer the rainhat defaults.
+ */
+
+/**
  * Admin configuration form builder.
  */
 function rainhat_admin_form($form, &$form_state) {
