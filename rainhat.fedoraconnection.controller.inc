@@ -14,7 +14,7 @@ class RainhatFedoraConnectionController extends DrupalDefaultEntityController {
   }
 
   public function create() {
-    $fedora_connection = new StdClass();
+    $fedora_connection = new stdClass();
     $fedora_connection->name = '';
     $fedora_connection->url = variable_get('rainhat_default_fedora_url');
     $fedora_connection->admin_username = variable_get('rainhat_default_fedora_admin_username');
@@ -23,7 +23,7 @@ class RainhatFedoraConnectionController extends DrupalDefaultEntityController {
   }
 
   public function save($fedora_connection) {
-    if(empty($fedora_connection->id)) {
+    if (empty($fedora_connection->id)) {
       drupal_write_record('rainhat_fedora_connection', $fedora_connection);
       module_invoke_all('entity_insert', $fedora_connection, 'rainhat_fedora_connection');
     }
@@ -36,7 +36,7 @@ class RainhatFedoraConnectionController extends DrupalDefaultEntityController {
   }
 
   public function delete($ids) {
-    if(empty($ids)) {
+    if (empty($ids)) {
       return FALSE;
     }
 
@@ -46,7 +46,7 @@ class RainhatFedoraConnectionController extends DrupalDefaultEntityController {
       ->execute();
 
     // Make sure to invoke the delete hook for each topic.
-    foreach($fedora_connections as $fedora_connection) {
+    foreach ($fedora_connections as $fedora_connection) {
       module_invoke_all('entity_delete', $fedora_connection, 'rainhat_fedora_connection');
     }
 

@@ -65,7 +65,7 @@ function rainhat_menu() {
   $items['admin/structure/fedora/connections'] = array(
     'title' => 'Connections',
     'type' => MENU_DEFAULT_LOCAL_TASK,
-  );  
+  );
   $items['admin/structure/fedora/connections/add'] = array(
     'title' => 'Add a Fedora Repository connection',
     'page callback' => 'rainhat_fedora_connection_add',

@@ -28,7 +28,7 @@ define('RAINHAT_DEFAULT_FEDORA_ADMIN_PASSWORD', 'fedoraAdmin');
 /**
  * Implements hook_schema().
  */
- 
+
 function rainhat_schema() {
   $schema['rainhat_fedora_connection'] = array(
     'description' => 'Fedora Connection',
@@ -69,7 +69,7 @@ function rainhat_schema() {
     ),
     'unique keys' => array(
       'name' => array('name'),
-    ), 
+    ),
     'primary key' => array('id'),
   );
   return $schema;

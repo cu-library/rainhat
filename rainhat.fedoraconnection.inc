@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Callbacks include file for the Fedora Connection entity. 
+ * Callbacks file for the Fedora Connection entity.
  */
 
 /**
@@ -16,7 +16,7 @@ function rainhat_fedoraconnection_list() {
 
   $header = array(t('Name'), t('Connection URL (Links to the Fedora Admin Interface)'));
 
-  if(user_access('administer fedora connections collections')) {
+  if (user_access('administer fedora connections collections')) {
     $header[] = t('Administer');
   }
 
@@ -24,12 +24,12 @@ function rainhat_fedoraconnection_list() {
   uasort($fedora_connections, create_function('$a,$b', 'return strcmp($a->name, $b->name);'));
 
   $rows = array();
-  foreach($fedora_connections as $id => $fedora_connection) {
+  foreach ($fedora_connections as $id => $fedora_connection) {
     $row = array();
     $row[] = check_plain($fedora_connection->name);
-    $row[] = l(check_plain($fedora_connection->url), $fedora_connection->url . "/admin") ;
+    $row[] = l($fedora_connection->url, $fedora_connection->url . "/admin") ;
 
-    if(user_access('administer fedora connections collections')) {
+    if (user_access('administer fedora connections collections')) {
       $act = l(t('Edit'), "admin/structure/fedora/connections/$id/edit");
       $act .= ', ';
       $act .= l(t('Delete'), "admin/structure/fedora/connections/$id/delete");
@@ -105,15 +105,15 @@ function rainhat_fedora_connection_form($form, &$form_state, $fedora_connection)
   return $form;
 }
 
-function rainhat_fedora_connection_form_validate($form, &$form_state){
-  
+function rainhat_fedora_connection_form_validate($form, &$form_state) {
+
   //Ensure that the fedora connection is unique
   $duplicates = db_select('rainhat_fedora_connection', 'f')
     ->fields('f')
     ->where('name=:name OR url=:url', array('name' => $form_state['values']['name'], 'url' => $form_state['values']['url']))
     ->execute();
-    
-  foreach ($duplicates as $duplicate){
+
+  foreach ($duplicates as $duplicate) {
     form_set_error('', t('The name or url is not unique. @name has @url', array('@name' => $duplicate->name, '@url' => $duplicate->url)));
   }
 
@@ -152,14 +152,14 @@ function rainhat_fedora_connection_delete($form, &$form_state, $fedora_connectio
 }
 
 function rainhat_fedora_connection_delete_submit($form, &$form_state) {
-  if($form_state['values']['confirm']) {
+  if ($form_state['values']['confirm']) {
     $fedora_connection = rainhat_fedora_connection_load($form_state['values']['id']);
 
     // Invoke the delete() method that we added to the controller.
     entity_get_controller('rainhat_fedora_connection')->delete(array($fedora_connection->id));
     drupal_set_message(t('Fedora Connection "@f" has been deleted.', array('@f' => $fedora_connection->name)));
   }
-  if(isset($_GET['destination'])) {
+  if (isset($_GET['destination'])) {
     $destination = drupal_get_destination();
     unset($_GET['destination']);
   }
