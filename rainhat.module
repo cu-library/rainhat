@@ -10,6 +10,7 @@
  * Implements hook_entity_info().
  */
 function rainhat_entity_info() {
+
   $return['rainhat_fedora_connection'] = array(
     'label' => t('Fedora Repository Connection'),
 
@@ -22,12 +23,21 @@ function rainhat_entity_info() {
       'id' => 'id',
       'label' => 'name',
     ),
-    'view modes' => array(
-      'full' => array(
-        'label' => t('Full View'),
-        'custom settings' => FALSE,
-      ),
+  );
+  
+  $return['rainhat_fedora_collection'] = array(
+    'label' => t('Fedora Repository collection'),
+
+    // the default controller is extended with create(), save() and delete() methods
+    'controller class' => 'RainhatFedoraCollectionController',
+    'base table' => 'rainhat_fedora_collection',
+    'fieldable' => FALSE,
+
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'name',
     ),
+
   );
   return $return;
 }
@@ -42,26 +52,24 @@ function rainhat_menu() {
   //This is the settings admin menu item.
   //This is where module wide config settings are set.
   $items['admin/config/system/rainhat'] = array(
-    'title' => 'Fedora Connection Defaults',
-    'description' => 'Set options for the rainhat module.',
+    'title' => 'Fedora Connection Defaults',    
+    'access arguments' => array('administer rainhat'),    
+    'description' => 'Set options for the rainhat module.',    
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_admin_form'),
-    'access arguments' => array('administer rainhat'),
     'file' => 'rainhat.moduleadmin.inc',
     'type' => MENU_NORMAL_ITEM,
   );
 
-  //Fedora Connection Administration
+  //Fedora Connection Administration ----------------------------------------------------------------------
   $items['admin/structure/fedora'] = array(
-    'title' => 'Fedora Repository Connections and Collections',
-    'access arguments' => array('administer fedora connections collections'),
+    'title' => 'Fedora Repository Connections and Collections',    
     'description' => 'Add, Edit, and Remove connections to Fedora Repositories and the collections they contain.',
     'page callback' => 'rainhat_fedoraconnection_list',
     'access arguments' => array('administer fedora connections collections'),
     'file' => 'rainhat.fedoraconnection.inc',
     'type' => MENU_NORMAL_ITEM,
   );
-  //Fedora Connection - Connections Administration
   $items['admin/structure/fedora/connections'] = array(
     'title' => 'Connections',
     'type' => MENU_DEFAULT_LOCAL_TASK,
@@ -89,15 +97,38 @@ function rainhat_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fedoraconnection.inc',
   );
-
-  //Fedora Connection - Collection Administration
+  
+  //Fedora Collection Administration ----------------------------------------------------------------------
   $items['admin/structure/fedora/collections'] = array(
     'title' => 'Collections',
-    'page callback' => 'rainhat_collection_list',
     'access arguments' => array('administer fedora connections collections'),
-    'file' => 'rainhat.collection.inc',
+    'page callback' => 'rainhat_fedoracollection_list',
+    'file' => 'rainhat.fedoracollection.inc',
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
+  );
+  $items['admin/structure/fedora/collections/add'] = array(
+    'title' => 'Add a Fedora Repository collection',
+    'page callback' => 'rainhat_fedora_collection_add',
+    'access arguments' => array('administer fedora connections collections'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'rainhat.fedoracollection.inc',
+  );
+  $items['admin/structure/fedora/collections/%rainhat_fedora_collection/edit'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_fedora_collection_form', 4),
+    'access arguments' => array('administer fedora connections collections'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.fedoracollection.inc',
+  );
+  $items['admin/structure/fedora/collections/%rainhat_fedora_collection/delete'] = array(
+    'title' => 'Delete',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_fedora_collection_delete', 4),
+    'access arguments' => array('administer fedora connections collections'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.fedoracollection.inc',
   );
 
   return $items;
@@ -128,11 +159,21 @@ function rainhat_permission() {
 }
 
 /**
- * Menu load callback.
+ * Menu load callback for connections.
  */
 function rainhat_fedora_connection_load($id) {
   // The core entity functions take arrays of entities as arguments.
   // If you need functions that accept single entities, you have to define them.
   $fedora_connections = entity_load('rainhat_fedora_connection', array($id));
   return reset($fedora_connections);
+}
+
+/**
+ * Menu load callback for collections.
+ */
+function rainhat_fedora_collection_load($id) {
+  // The core entity functions take arrays of entities as arguments.
+  // If you need functions that accept single entities, you have to define them.
+  $fedora_collections = entity_load('rainhat_fedora_collection', array($id));
+  return reset($fedora_collections);
 }

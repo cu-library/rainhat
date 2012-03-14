@@ -72,6 +72,50 @@ function rainhat_schema() {
     ),
     'primary key' => array('id'),
   );
+  
+  $schema['rainhat_fedora_collection'] = array(
+    'description' => 'Fedora Collection',
+    'fields' => array(
+    
+      'id' => array(
+        'description' => 'id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'name',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'pid_prefix_list' => array(
+        'description' => 'pid_prefixes contained in this collection',
+        'type' => 'text',
+      ),
+      'parent_fedora_connection_id' => array(
+        'description' => 'parent fedora connection id {rainhat_fedora_connection}.id',
+        'type' => 'int',
+      ),
+      'hooked_type' => array(
+        'description' => 'hooked types',
+        'type' => 'varchar',
+        'length' => 255,
+      ),
+    ),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
+    'foreign keys' => array(
+      'parent_fedora_connection' => array(
+        'table' => 'rainhat_fedora_connection',
+        'columns' => array('parent_fedora_connection_id' => 'id'),
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  
   return $schema;
 }
 

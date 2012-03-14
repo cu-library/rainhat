@@ -20,7 +20,7 @@ function rainhat_fedoraconnection_list() {
     $header[] = t('Administer');
   }
 
-  // Sort the topics by date, since entity_load() returns them unsorted.
+  // Sort the entries by date, since entity_load() returns them unsorted.
   uasort($fedora_connections, create_function('$a,$b', 'return strcmp($a->name, $b->name);'));
 
   $rows = array();
@@ -38,7 +38,7 @@ function rainhat_fedoraconnection_list() {
 
     $rows[] = $row;
   }
-  $elements['fedpra_connections'] = array(
+  $elements['fedora_connections'] = array(
     '#theme' => 'table',
     '#title' => t('Fedora Connections'),
     '#header' => $header,
