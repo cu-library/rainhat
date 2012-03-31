@@ -25,17 +25,31 @@ function rainhat_entity_info() {
     ),
   );
   
-  $return['rainhat_fedora_collection'] = array(
-    'label' => t('Fedora Repository collection'),
+  $return['rainhat_transformation'] = array(
+    'label' => t('Node Transformations'),
 
     // the default controller is extended with create(), save() and delete() methods
-    'controller class' => 'RainhatFedoraCollectionController',
-    'base table' => 'rainhat_fedora_collection',
+    'controller class' => 'RainhatTransformationController',
+    'base table' => 'rainhat_transformation',
     'fieldable' => FALSE,
 
     'entity keys' => array(
       'id' => 'id',
       'label' => 'name',
+    ),
+  );
+    
+  $return['rainhat_datastream'] = array(
+    'label' => t('Datastream Definitions'),
+
+    // the default controller is extended with create(), save() and delete() methods
+    'controller class' => 'RainhatDatastreamController',
+    'base table' => 'rainhat_datastream',
+    'fieldable' => FALSE,
+
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'datastream_id',
     ),
 
   );
@@ -63,10 +77,10 @@ function rainhat_menu() {
 
   //Fedora Connection Administration ----------------------------------------------------------------------
   $items['admin/structure/fedora'] = array(
-    'title' => 'Fedora Repository Connections and Collections',    
-    'description' => 'Add, Edit, and Remove connections to Fedora Repositories and the collections they contain.',
+    'title' => 'Fedora Repository Connections and Transformations',    
+    'description' => 'Add, Edit, and Remove connections to Fedora Repositories and node data transformations.',
     'page callback' => 'rainhat_fedoraconnection_list',
-    'access arguments' => array('administer fedora connections collections'),
+    'access arguments' => array('administer fedora connections transformations'),
     'file' => 'rainhat.fedoraconnection.inc',
     'type' => MENU_NORMAL_ITEM,
   );
@@ -77,7 +91,7 @@ function rainhat_menu() {
   $items['admin/structure/fedora/connections/add'] = array(
     'title' => 'Add a Fedora Repository connection',
     'page callback' => 'rainhat_fedora_connection_add',
-    'access arguments' => array('administer fedora connections collections'),
+    'access arguments' => array('administer fedora connections transformations'),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'rainhat.fedoraconnection.inc',
   );
@@ -85,7 +99,7 @@ function rainhat_menu() {
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_fedora_connection_form', 4),
-    'access arguments' => array('administer fedora connections collections'),
+    'access arguments' => array('administer fedora connections transformations'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fedoraconnection.inc',
   );
@@ -93,43 +107,71 @@ function rainhat_menu() {
     'title' => 'Delete',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_fedora_connection_delete', 4),
-    'access arguments' => array('administer fedora connections collections'),
+    'access arguments' => array('administer fedora connections transformations'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fedoraconnection.inc',
   );
   
-  //Fedora Collection Administration ----------------------------------------------------------------------
-  $items['admin/structure/fedora/collections'] = array(
-    'title' => 'Collections',
-    'access arguments' => array('administer fedora connections collections'),
-    'page callback' => 'rainhat_fedoracollection_list',
-    'file' => 'rainhat.fedoracollection.inc',
+  //Tranformation Administration ----------------------------------------------------------------------
+  $items['admin/structure/fedora/transformations'] = array(
+    'title' => 'Transformations',
+    'access arguments' => array('administer fedora connections transformations'),
+    'page callback' => 'rainhat_transformation_list',
+    'file' => 'rainhat.transformation.inc',
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
   );
-  $items['admin/structure/fedora/collections/add'] = array(
-    'title' => 'Add a Fedora Repository collection',
-    'page callback' => 'rainhat_fedora_collection_add',
-    'access arguments' => array('administer fedora connections collections'),
+  $items['admin/structure/fedora/transformations/add'] = array(
+    'title' => 'Add a New Transformation',
+    'page callback' => 'rainhat_transformation_add',
+    'access arguments' => array('administer fedora connections transformations'),
     'type' => MENU_LOCAL_ACTION,
-    'file' => 'rainhat.fedoracollection.inc',
+    'file' => 'rainhat.transformation.inc',
   );
-  $items['admin/structure/fedora/collections/%rainhat_fedora_collection/edit'] = array(
+  $items['admin/structure/fedora/transformations/%rainhat_transformation/edit'] = array(
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_fedora_collection_form', 4),
-    'access arguments' => array('administer fedora connections collections'),
+    'page arguments' => array('rainhat_transformation_form', 4),
+    'access arguments' => array('administer fedora connections transformations'),
     'type' => MENU_CALLBACK,
-    'file' => 'rainhat.fedoracollection.inc',
+    'file' => 'rainhat.transformation.inc',
   );
-  $items['admin/structure/fedora/collections/%rainhat_fedora_collection/delete'] = array(
+  $items['admin/structure/fedora/transformations/%rainhat_transformation/delete'] = array(
     'title' => 'Delete',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_fedora_collection_delete', 4),
-    'access arguments' => array('administer fedora connections collections'),
+    'page arguments' => array('rainhat_transformation_delete', 4),
+    'access arguments' => array('administer fedora connections transformations'),
     'type' => MENU_CALLBACK,
-    'file' => 'rainhat.fedoracollection.inc',
+    'file' => 'rainhat.transformation.inc',
   );
+  
+  //Datastream Administration ----------------------------------------------------------------------
+  $items['admin/structure/fedora/datastreams/%rainhat_transformation/add'] = array(
+    'title' => 'Add a New Datastream',
+    'page callback' => 'rainhat_datastream_add',
+    'page arguments' => array(4),
+    'access arguments' => array('administer fedora connections transformations'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.datastream.inc',
+  );
+  $items['admin/structure/fedora/datastreams/%rainhat_datastream/edit'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_datastream_form', 4),
+    'access arguments' => array('administer fedora connections transformations'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.datastream.inc',
+  );
+  $items['admin/structure/fedora/datastreams/%rainhat_datastream/delete'] = array(
+    'title' => 'Delete',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_datastream_delete', 4),
+    'access arguments' => array('administer fedora connections transformations'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.datastream.inc',
+  );
+  
+  
 
   return $items;
 
@@ -148,9 +190,9 @@ function rainhat_permission() {
     'restrict access' => TRUE,
   );
 
-  $permissions['administer fedora connections collections'] = array(
-    'title' => t('Administer Fedora Repository Connections and Fedora Collections.'),
-    'description' => t('Add, Edit, and Remove connections to Fedora Repositories and the collections they contain.'),
+  $permissions['administer fedora connections transformations'] = array(
+    'title' => t('Administer Fedora Repository Connections and Transformations.'),
+    'description' => t('Add, Edit, and Remove connections to Fedora Repositories and the transformations used to load the data into Fedora.'),
     'restrict access' => TRUE,
   );
 
@@ -171,9 +213,19 @@ function rainhat_fedora_connection_load($id) {
 /**
  * Menu load callback for collections.
  */
-function rainhat_fedora_collection_load($id) {
+function rainhat_transformation_load($id) {
   // The core entity functions take arrays of entities as arguments.
   // If you need functions that accept single entities, you have to define them.
-  $fedora_collections = entity_load('rainhat_fedora_collection', array($id));
-  return reset($fedora_collections);
+  $transformations = entity_load('rainhat_transformation', array($id));
+  return reset($transformations);
+}
+
+/**
+ * Menu load callback for collections.
+ */
+function rainhat_datastream_load($id) {
+  // The core entity functions take arrays of entities as arguments.
+  // If you need functions that accept single entities, you have to define them.
+  $datastreams = entity_load('rainhat_datastream', array($id));
+  return reset($datastreams);
 }

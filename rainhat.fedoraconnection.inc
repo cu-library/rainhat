@@ -43,6 +43,7 @@ function rainhat_fedoraconnection_list() {
     '#title' => t('Fedora Connections'),
     '#header' => $header,
     '#rows' => $rows,
+    '#empty' => t('No Fedora Connections...'),
   );
   return $elements;
 }
@@ -111,9 +112,10 @@ function rainhat_fedora_connection_form_validate($form, &$form_state) {
   $duplicates = db_select('rainhat_fedora_connection', 'f')
     ->fields('f')
     ->where('name=:name OR url=:url', array('name' => $form_state['values']['name'], 'url' => $form_state['values']['url']))
-    ->execute();
+    ->execute()
+    -> fetchAssoc();
 
-  foreach ($duplicates as $duplicate) {
+  if (!empty($duplicates)) {
     form_set_error('', t('The name or url is not unique. @name has @url', array('@name' => $duplicate->name, '@url' => $duplicate->url)));
   }
 

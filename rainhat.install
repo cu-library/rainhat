@@ -73,8 +73,8 @@ function rainhat_schema() {
     'primary key' => array('id'),
   );
   
-  $schema['rainhat_fedora_collection'] = array(
-    'description' => 'Fedora Collection',
+  $schema['rainhat_transformation'] = array(
+    'description' => 'Node Transformation',
     'fields' => array(
     
       'id' => array(
@@ -90,7 +90,7 @@ function rainhat_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
-      'pid_prefix_list' => array(
+      'pid_prefix' => array(
         'description' => 'pid_prefixes contained in this collection',
         'type' => 'text',
       ),
@@ -99,7 +99,7 @@ function rainhat_schema() {
         'type' => 'int',
       ),
       'hooked_type' => array(
-        'description' => 'hooked types',
+        'description' => 'hooked type',
         'type' => 'varchar',
         'length' => 255,
       ),
@@ -115,6 +115,54 @@ function rainhat_schema() {
     ),
     'primary key' => array('id'),
   );
+  
+  $schema['rainhat_datastream'] = array(
+    'description' => 'Datastream Transformation',
+    'fields' => array(    
+      'id' => array(
+        'description' => 'id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'datastream_id' => array(
+        'description' => 'datastream_id',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'type' => array(
+        'description' => 'type',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'php_script' => array(
+        'description' => 'php_script',
+        'type' => 'text',
+      ),
+      'file_field' => array(
+        'description' => 'file_field',
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'parent_transformation_id' => array(
+        'description' => 'parent transformation id {rainhat_transformation}.id',
+        'type' => 'int',
+      ),
+    ),
+    'foreign keys' => array(
+      'parent_transformation_id' => array(
+        'table' => 'rainhat_transformation',
+        'columns' => array('parent_transformation_id' => 'id'),
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  
   
   return $schema;
 }

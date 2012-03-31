@@ -5,6 +5,8 @@ version = 7.x-1.0
 package = Rainhat
 
 files[] = rainhat.fedoraconnection.controller.inc
-files[] = rainhat.fedoracollection.controller.inc
+files[] = rainhat.transformation.controller.inc
+files[] = rainhat.datastream.controller.inc
+files[] = rainhat.fedoraapi.inc
 
 configure = admin/config/system/rainhat
