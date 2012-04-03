@@ -33,7 +33,6 @@ function rainhat_schema() {
   $schema['rainhat_fedora_connection'] = array(
     'description' => 'Fedora Connection',
     'fields' => array(
-
       'id' => array(
         'description' => 'id',
         'type' => 'serial',
@@ -72,11 +71,10 @@ function rainhat_schema() {
     ),
     'primary key' => array('id'),
   );
-  
-  $schema['rainhat_transformation'] = array(
-    'description' => 'Node Transformation',
-    'fields' => array(
-    
+
+  $schema['rainhat_node_export'] = array(
+    'description' => 'Node Export',
+    'fields' => array(    
       'id' => array(
         'description' => 'id',
         'type' => 'serial',
@@ -115,9 +113,9 @@ function rainhat_schema() {
     ),
     'primary key' => array('id'),
   );
-  
+
   $schema['rainhat_datastream'] = array(
-    'description' => 'Datastream Transformation',
+    'description' => 'Datastream',
     'fields' => array(    
       'id' => array(
         'description' => 'id',
@@ -149,15 +147,33 @@ function rainhat_schema() {
         'length' => 255,
         'default' => '',
       ),
-      'parent_transformation_id' => array(
-        'description' => 'parent transformation id {rainhat_transformation}.id',
+      'parent_node_export_id' => array(
+        'description' => 'parent node export id {rainhat_node_export}.id',
         'type' => 'int',
+      ),
+      'label' => array(
+        'description' => 'label',
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'location' => array(
+        'description' => 'location',
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'control_group' => array(
+        'description' => 'location',
+        'type' => 'varchar',
+        'length' => 1,
+        'default' => '',
       ),
     ),
     'foreign keys' => array(
-      'parent_transformation_id' => array(
-        'table' => 'rainhat_transformation',
-        'columns' => array('parent_transformation_id' => 'id'),
+      'parent_node_export_id' => array(
+        'table' => 'rainhat_node_export',
+        'columns' => array('parent_node_export_id' => 'id'),
       ),
     ),
     'primary key' => array('id'),
@@ -179,20 +195,19 @@ function rainhat_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
-      'parent_transformation_id' => array(
-        'description' => 'parent transformation id {rainhat_transformation}.id',
+      'parent_node_export_id' => array(
+        'description' => 'parent node export id {rainhat_node_export}.id',
         'type' => 'int',
       ),
     ),
     'foreign keys' => array(
-      'parent_transformation_id' => array(
-        'table' => 'rainhat_transformation',
-        'columns' => array('parent_transformation_id' => 'id'),
-      ),      
-    ),   
+      'parent_node_export_id' => array(
+        'table' => 'rainhat_node_export',
+        'columns' => array('parent_node_export_id' => 'id'),
+      ),
+    ),
   );
-  
-  
+
   return $schema;
 }
 

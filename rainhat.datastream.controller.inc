@@ -13,13 +13,16 @@ class RainhatDatastreamController extends DrupalDefaultEntityController {
     parent::__construct('rainhat_datastream');
   }
 
-  public function create($transformation_id) {
+  public function create($node_export_id) {
     $datastream = new stdClass();
     $datastream->datastream_id = '';
     $datastream->type= '';
     $datastream->php_script = '';
     $datastream->file_field = '';
-    $datastream->parent_transformation_id = $transformation_id;
+    $datastream->parent_node_export_id = $node_export_id;
+    $datastream->label = '';
+    $datastream->location = '';
+    $datastream->control_group = 'X';
     return $datastream;
   }
 

@@ -2,8 +2,12 @@
 
 Intregrates Fedora Commons Repositories and Drupal Content Management Systems. 
 
-## NOT EVEN ALPHA YET, still building the repo. 
+This Drupal 7 module enables site administrators to define how node data is saved in 
+Fedora. XML content is created by defining simple PHP snippets. File content is 
+imported as is. It is hoped that this module will enable the use of Drupal as the frontend
+for a Fedora Information Repository seemlessly and easily. 
 
+Status: Early Beta. Use at your own risk, not yet ready for production environments. 
 
 ## License (MIT)
 

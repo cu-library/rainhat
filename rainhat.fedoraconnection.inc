@@ -14,11 +14,7 @@ function rainhat_fedoraconnection_list() {
   // entity_load() called with one argument loads all entities of the specified type.
   $fedora_connections = entity_load('rainhat_fedora_connection');
 
-  $header = array(t('Name'), t('Connection URL (Links to the Fedora Admin Interface)'));
-
-  if (user_access('administer fedora connections collections')) {
-    $header[] = t('Administer');
-  }
+  $header = array(t('Name'), t('Connection URL (Links to the Fedora Admin Interface)'), t('Administer'));
 
   // Sort the entries by date, since entity_load() returns them unsorted.
   uasort($fedora_connections, create_function('$a,$b', 'return strcmp($a->name, $b->name);'));
@@ -29,12 +25,10 @@ function rainhat_fedoraconnection_list() {
     $row[] = check_plain($fedora_connection->name);
     $row[] = l($fedora_connection->url, $fedora_connection->url . "/admin") ;
 
-    if (user_access('administer fedora connections collections')) {
-      $act = l(t('Edit'), "admin/structure/fedora/connections/$id/edit");
-      $act .= ', ';
-      $act .= l(t('Delete'), "admin/structure/fedora/connections/$id/delete");
-      $row[] = $act;
-    }
+    $act = l(t('Edit'), "admin/structure/fedora/connections/$id/edit");
+    $act .= ', ';
+    $act .= l(t('Delete'), "admin/structure/fedora/connections/$id/delete");
+    $row[] = $act;
 
     $rows[] = $row;
   }
@@ -124,7 +118,7 @@ function rainhat_fedora_connection_form_validate($form, &$form_state) {
     ->execute()
     ->fetchObject();
 
-  if (!empty($duplicates)) {
+  if ($duplicates !== FALSE) {
     form_set_error('', t('The name or url is not unique. @name has @url', array('@name' => $duplicates->name, '@url' => $duplicates->url)));
   }
   
@@ -146,7 +140,6 @@ function rainhat_fedora_connection_form_submit($form, &$form_state) {
   $fedora_connection->admin_username = $form_state['values']['admin_username'];
   $fedora_connection->admin_password = $form_state['values']['admin_password'];
 
-  // Invoke the save() method that we added to the controller.
   entity_get_controller('rainhat_fedora_connection')->save($fedora_connection);
   drupal_set_message(t('Fedora Connection saved.'));
   $form_state['redirect'] = 'admin/structure/fedora/connections';
@@ -154,24 +147,20 @@ function rainhat_fedora_connection_form_submit($form, &$form_state) {
 
 function rainhat_fedora_connection_delete($form, &$form_state, $fedora_connection) {
   $form['#fedora_connection'] = $fedora_connection;
-  $form['id'] = array(
-    '#type' => 'value',
-    '#value' => $fedora_connection->id,
-  );
   return confirm_form($form,
     t('Are you sure you want to delete @f?', array('@f' => $fedora_connection->name)),
-    '<front>',
-    t('This action cannot be undone.'),
+    'admin/structure/fedora/connections',
+    t('This action cannot be undone, and will also delete any node exports set for this fedora connection.'),
     t('Delete'),
     t('Cancel')
   );
 }
 
 function rainhat_fedora_connection_delete_submit($form, &$form_state) {
+  $fedora_connection = $form['#fedora_connection'];
+  
   if ($form_state['values']['confirm']) {
-    $fedora_connection = rainhat_fedora_connection_load($form_state['values']['id']);
-
-    // Invoke the delete() method that we added to the controller.
+    $fedora_connection = rainhat_fedora_connection_load($fedora_connection->id);
     entity_get_controller('rainhat_fedora_connection')->delete(array($fedora_connection->id));
     drupal_set_message(t('Fedora Connection "@f" has been deleted.', array('@f' => $fedora_connection->name)));
   }

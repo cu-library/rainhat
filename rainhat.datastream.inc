@@ -7,29 +7,29 @@
 
 
 /**
- * Add datastream callback.
+ * Add Datastream callback.
  */
-function rainhat_datastream_add($transformation) {
+function rainhat_datastream_add($node_export) {
     
   // Invoke the create() method we added to the controller to get a new entity with defaults.
-  $datastream = entity_get_controller('rainhat_datastream')->create($transformation->id);
+  $datastream = entity_get_controller('rainhat_datastream')->create($node_export->id);
 
   return drupal_get_form('rainhat_datastream_form', $datastream);
 }
 
 /**
- * datastream add/edit form callback.
+ * Datastream add/edit form callback.
  */
 function rainhat_datastream_form($form, &$form_state, $datastream) {
   $form['#datastream'] = $datastream;
   
-  $parent_transformation = db_select('rainhat_transformation', 'f')
-      ->fields('f')
-      ->condition('id', $datastream->parent_transformation_id)
+  $parent_node_export = db_select('rainhat_node_export', 'rne')
+      ->fields('rne')
+      ->condition('id', $datastream->parent_node_export_id)
       ->execute()
       ->fetchObject();
       
-  $fields = field_info_instances('node',$parent_transformation->hooked_type);
+  $fields = field_info_instances('node',$parent_node_export->hooked_type);
  
   $form['datastream_id'] = array(
     '#type' => 'textfield',
@@ -39,14 +39,46 @@ function rainhat_datastream_form($form, &$form_state, $datastream) {
     '#maxlength' => 255,
     '#required' => TRUE,
   );
-    
+  
+  $form['label'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Datastream Label'),
+    '#default_value' => check_plain($datastream->datastream_id),
+    '#size' => 50,
+    '#maxlength' => 255,
+    '#required' => TRUE,
+    '#description' => t('A Label for this Datastream. This field can include php (for example, $node->title)'),
+  );
+  
   $form['type'] = array(
     '#type' => 'select',
     '#title' => t('Type'),
     '#default_value' => check_plain($datastream->type),
-    '#options' => array('XML'=>'XML', 'FILE'=>'FILE'),
+    '#options' => array('scripted'=>'Scripted (PHP returning XML or Text)', 'simple'=>'Simple (Field Uploaded without processing)'),
+    '#description' => t('Is this datastream dynamically generated (scripted, mostly used to create XML documents), or simple (the field is uploaded directly, good for files or images).'),
   );
   
+  
+   $form['scripted'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Scripted Datastream Options'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="type"]' => array('value' => 'scripted'),
+      ),
+    ),
+  );
+  
+  $form['simple'] = array(
+    '#type' => 'fieldset', 
+    '#title' => t('Simple Datastream Options'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="type"]' => array('value' => 'simple'),
+      ),
+    ),
+  );
+    
   $header = array( 
     array('data' => t('Field Name')),   
     array('data' => t('Code'))
@@ -69,22 +101,23 @@ function rainhat_datastream_form($form, &$form_state, $datastream) {
     );
   }   
   
-  $form['available_variables'] = array(
+  $form['scripted']['available_variables'] = array(
 
     '#markup' => theme('table', array('header' => $header, 'rows'=> $rows, 'caption' => 'The type associated with this transformation has the following fields:')),  
 
   );  
   
-  $form['php_script'] = array(
+  $form['scripted']['php_script'] = array(
     '#type' => 'textarea',
     '#title' => t('Transformation Code (used if XML type)'),
     '#default_value' => $datastream->php_script,
+    '#rows' => 20,
   );    
   
     
-  $form['file_field'] = array(
+  $form['simple']['file_field'] = array(
     '#type' => 'select',
-    '#title' => t('File Field (used if FILE type)'),
+    '#title' => t('Field to Upload'),
     '#default_value' => check_plain($datastream->file_field),
     '#options' => array_combine(array_keys($fields), array_keys($fields)),
   );

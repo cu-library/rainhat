@@ -49,6 +49,18 @@ class RainhatFedoraConnectionController extends DrupalDefaultEntityController {
     foreach ($fedora_connections as $fedora_connection) {
       module_invoke_all('entity_delete', $fedora_connection, 'rainhat_fedora_connection');
     }
+    
+    //Because node exports live as children of the fedora connection, we need
+    // to delete them so they aren't 'orphaned' in the database. 
+    // Though this sounds cruel, it's really for the best. 
+    $affected_node_exports = db_select('rainhat_node_export', 'rne')
+      ->fields('rne', array('id'))
+      ->condition('parent_fedora_connection_id', $ids, 'IN')
+      ->execute();
+    
+    foreach ($affected_node_exports as $affected_node_export){
+      entity_get_controller('rainhat_fedora_connection')->delete(array($affected_node_export->id));
+    }
 
     // It's necessary to clear the caches when an entity is deleted.
     cache_clear_all();

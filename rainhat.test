@@ -1,0 +1,44 @@
+<?php
+
+/**
+ * @file
+ * Tests for the Rainhat module. 
+ */
+
+class RainhatModuleSettingsTest extends DrupalWebTestCase {
+  
+  protected $privileged_user;
+  
+  public function getInfo() {
+    return array(
+      'name' => 'Rainhat Module - Module Settings Testing',
+      'description' => 'Tests the rainhat module settings.',
+      'group' => 'Rainhat',
+    );
+  }
+  
+  public function setUp() {
+    parent::setUp('rainhat');    
+    $this->privileged_user = $this->drupalCreateUser(array(
+      'administer fedora connections transformations',
+    ));
+    $this->drupalLogin($this->privileged_user);
+  }
+  
+  public function testRainhatSettings() {
+    
+    //Ensure the defaults are correct
+    $this->assertEqual(variable_get('rainhat_default_fedora_url'), 
+                       'http://localhost:8080/fedora', 
+                       'The default fedora url is correct');
+    $this->assertEqual(variable_get('rainhat_default_fedora_admin_username'), 
+                       'fedoraAdmin', 
+                       'The default fedora admin username is correct');
+    $this->assertEqual(variable_get('rainhat_default_fedora_admin_password'), 
+                       'fedoraAdmin', 
+                       'The default fedora admin password is correct');
+    
+    
+  }
+  
+}
