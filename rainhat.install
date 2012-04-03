@@ -163,6 +163,35 @@ function rainhat_schema() {
     'primary key' => array('id'),
   );
   
+  $schema['rainhat_nid_to_pid'] = array(
+    'description' => 'NID -> PID',
+    'fields' => array(    
+      'nid' => array(
+        'description' => 'nid',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'pid' => array(
+        'description' => 'pid',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'parent_transformation_id' => array(
+        'description' => 'parent transformation id {rainhat_transformation}.id',
+        'type' => 'int',
+      ),
+    ),
+    'foreign keys' => array(
+      'parent_transformation_id' => array(
+        'table' => 'rainhat_transformation',
+        'columns' => array('parent_transformation_id' => 'id'),
+      ),      
+    ),   
+  );
+  
   
   return $schema;
 }

@@ -23,6 +23,13 @@ function rainhat_datastream_add($transformation) {
 function rainhat_datastream_form($form, &$form_state, $datastream) {
   $form['#datastream'] = $datastream;
   
+  $parent_transformation = db_select('rainhat_transformation', 'f')
+      ->fields('f')
+      ->condition('id', $datastream->parent_transformation_id)
+      ->execute()
+      ->fetchObject();
+      
+  $fields = field_info_instances('node',$parent_transformation->hooked_type);
  
   $form['datastream_id'] = array(
     '#type' => 'textfield',
@@ -40,25 +47,46 @@ function rainhat_datastream_form($form, &$form_state, $datastream) {
     '#options' => array('XML'=>'XML', 'FILE'=>'FILE'),
   );
   
+  $header = array( 
+    array('data' => t('Field Name')),   
+    array('data' => t('Code'))
+  ); 
+  
+  //First, add the title, author, and other nice fields
+  $rows[] = array( 
+    array('data' => t('Title')),  
+    array('data' => t('$node->title'))
+  ); 
+  $rows[] = array(  
+    array('data' => t('Author')),  
+    array('data' => t('$node->name'))
+  );
+ 
+  foreach ($fields as $field){
+    $rows[] = array(  
+      array('data' => $field['label']),  
+      array('data' => "field_get_items('".$field['entity_type']."', \$node, '".$field['field_name']."')"),
+    );
+  }   
+  
+  $form['available_variables'] = array(
+
+    '#markup' => theme('table', array('header' => $header, 'rows'=> $rows, 'caption' => 'The type associated with this transformation has the following fields:')),  
+
+  );  
+  
   $form['php_script'] = array(
     '#type' => 'textarea',
     '#title' => t('Transformation Code (used if XML type)'),
     '#default_value' => $datastream->php_script,
-  ); 
-    
-  $parent_transformation = db_select('rainhat_transformation', 'f')
-      ->fields('f')
-      ->condition('id', $datastream->parent_transformation_id)
-      ->execute()
-      ->fetchObject();
-      
-  $possible_file_fields = field_info_instances('node',$parent_transformation->hooked_type);
+  );    
+  
     
   $form['file_field'] = array(
     '#type' => 'select',
     '#title' => t('File Field (used if FILE type)'),
     '#default_value' => check_plain($datastream->file_field),
-    '#options' => array_combine(array_keys($possible_file_fields), array_keys($possible_file_fields)),
+    '#options' => array_combine(array_keys($fields), array_keys($fields)),
   );
   
   $form['actions'] = array('#type' => 'actions');
@@ -108,6 +136,8 @@ function rainhat_datastream_form_submit($form, &$form_state) {
      
   $datastream->datastream_id = $form_state['values']['datastream_id'];
   $datastream->type = $form_state['values']['type'];
+  $datastream->php_script = $form_state['values']['php_script'];
+  $datastream->file_field = $form_state['values']['file_field'];
 
   // Invoke the save() method that we added to the controller.
   entity_get_controller('rainhat_datastream')->save($datastream);

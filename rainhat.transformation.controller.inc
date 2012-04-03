@@ -43,17 +43,19 @@ class RainhatTransformationController extends DrupalDefaultEntityController {
       xmlns:dc=\\"http://purl.org/dc/elements/1.1/\\" 
       xmlns:xsi=\\"http://www.w3.org/2001/XMLSchema-instance\\" 
       xsi:schemaLocation=\\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\\">
-      <dc:title>a</dc:title>
-      <dc:identifier>a:a</dc:identifier>
+      <dc:title>$node->title</dc:title>
+      <dc:creator>$node->name</dc:creator>
+      <dc:identifier>$pid</dc:identifier>
       </oai_dc:dc>";';
       $datastream->file_field = '';
-      entity_get_controller('rainhat_datastream')->save($datastream);     
+      entity_get_controller('rainhat_datastream')->save($datastream);      
+      
     }
     else {
       drupal_write_record('rainhat_transformation', $transformation, 'id');
       module_invoke_all('entity_update', $transformation, 'rainhat_transformation');
     }
-
+    
     return $transformation;
   }
 

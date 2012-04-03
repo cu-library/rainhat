@@ -108,15 +108,29 @@ function rainhat_fedora_connection_form($form, &$form_state, $fedora_connection)
 
 function rainhat_fedora_connection_form_validate($form, &$form_state) {
 
+  $fedora_connection = $form['#fedora_connection'];
+  
+  $id = 0;
+  
+  if (isset($fedora_connection->id)){
+    $id = $fedora_connection->id;
+  }
+
   //Ensure that the fedora connection is unique
   $duplicates = db_select('rainhat_fedora_connection', 'f')
     ->fields('f')
     ->where('name=:name OR url=:url', array('name' => $form_state['values']['name'], 'url' => $form_state['values']['url']))
+    ->condition('id', $id, '<>') 
     ->execute()
-    -> fetchAssoc();
+    ->fetchObject();
 
   if (!empty($duplicates)) {
-    form_set_error('', t('The name or url is not unique. @name has @url', array('@name' => $duplicate->name, '@url' => $duplicate->url)));
+    form_set_error('', t('The name or url is not unique. @name has @url', array('@name' => $duplicates->name, '@url' => $duplicates->url)));
+  }
+  
+  $fedoraConnection = new FedoraConnection($form_state['values']['url'], $form_state['values']['admin_username'], $form_state['values']['admin_password']);
+  if (!$fedoraConnection->check()){
+    form_set_error('', t('The Fedora Repository is down, or the Fedora Connection data is incorrect.'));
   }
 
 }
@@ -166,7 +180,7 @@ function rainhat_fedora_connection_delete_submit($form, &$form_state) {
     unset($_GET['destination']);
   }
   else {
-    $destination = array('destination' => '<front>');
+    $destination = array('destination' => 'admin/structure/fedora/connections');
   }
   $form_state['redirect'] = $destination['destination'];
 }

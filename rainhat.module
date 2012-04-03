@@ -229,3 +229,69 @@ function rainhat_datastream_load($id) {
   $datastreams = entity_load('rainhat_datastream', array($id));
   return reset($datastreams);
 }
+
+
+
+/**
+ * Node Presave Hook
+ */
+function rainhat_node_insert($node){
+  
+  //Load the transformation entities  
+  $transformations = entity_load('rainhat_transformation');
+  foreach ($transformations as $id => $transformation) {
+    //Check to see if the node is one of the `hooked` node types
+    if ($node->type == $transformation->hooked_type){
+      
+      //Get the parent fedora connection data
+      $connection = db_select('rainhat_fedora_connection', 'f')
+      ->fields('f')
+      ->condition('id', $transformation->parent_fedora_connection_id)
+      ->execute()
+      ->fetchObject();
+      
+      //Create the fedora connection
+      $fc = new FedoraConnection($connection->url, $connection->admin_username, $connection->admin_password);
+      
+      //Check to see if the node has a pid attached to it yet
+      $pid = "";
+      
+      $nid_to_pid = db_select('rainhat_nid_to_pid', 'f')
+      ->fields('f')
+      ->condition('parent_transformation_id', $id)
+      ->condition('nid', $node->nid)
+      ->execute()
+      ->fetchObject();
+                  
+      if(empty($nid_to_pid)){
+        $pid = $fc->createNewEmptyObject('new', $transformation->pid_prefix, $node->title)->data;
+        $new_row = array('nid'=>$node->nid, 'pid'=>$pid, 'parent_transformation_id'=>$id);
+        drupal_write_record('rainhat_nid_to_pid',  $new_row);
+        if (user_access('administer fedora connections transformations')) {
+          drupal_set_message(t('Nid: @nid is mapped to Pid: @pid.', array('@nid' => $node->nid, '@pid' => $pid)));
+        }
+      } 
+      else{
+        $pid = $nid_to_pid->pid;        
+      }      
+      
+      //Go through the datastreams for the particular transformation, and run them.
+      $datastreams = db_select('rainhat_datastream', 'f')
+      ->fields('f')
+      ->condition('parent_transformation_id', $id)
+      ->execute();
+      
+      foreach ($datastreams as $datastream){   
+        if($datastream->type == 'XML'){
+          if (user_access('administer fedora connections transformations')) {
+            dpm($datastream->php_script);
+          }
+          $new_datastream = eval($datastream->php_script);
+          $fc->addDatastream($pid, $datastream->datastream_id, 'X', $datastream->datastream_id, $new_datastream);  
+        }
+      }
+    }
+  }
+}
+
+
