@@ -103,10 +103,10 @@ function rainhat_fedora_connection_form($form, &$form_state, $fedora_connection)
 function rainhat_fedora_connection_form_validate($form, &$form_state) {
 
   $fedora_connection = $form['#fedora_connection'];
-  
+
   $id = 0;
-  
-  if (isset($fedora_connection->id)){
+
+  if (isset($fedora_connection->id)) {
     $id = $fedora_connection->id;
   }
 
@@ -114,16 +114,16 @@ function rainhat_fedora_connection_form_validate($form, &$form_state) {
   $duplicates = db_select('rainhat_fedora_connection', 'f')
     ->fields('f')
     ->where('name=:name OR url=:url', array('name' => $form_state['values']['name'], 'url' => $form_state['values']['url']))
-    ->condition('id', $id, '<>') 
+    ->condition('id', $id, '<>')
     ->execute()
     ->fetchObject();
 
   if ($duplicates !== FALSE) {
     form_set_error('', t('The name or url is not unique. @name has @url', array('@name' => $duplicates->name, '@url' => $duplicates->url)));
   }
-  
-  $fedoraConnection = new FedoraConnection($form_state['values']['url'], $form_state['values']['admin_username'], $form_state['values']['admin_password']);
-  if (!$fedoraConnection->check()){
+
+  $fedora_connection = new FedoraConnection($form_state['values']['url'], $form_state['values']['admin_username'], $form_state['values']['admin_password']);
+  if (!$fedora_connection->check()) {
     form_set_error('', t('The Fedora Repository is down, or the Fedora Connection data is incorrect.'));
   }
 
@@ -158,7 +158,7 @@ function rainhat_fedora_connection_delete($form, &$form_state, $fedora_connectio
 
 function rainhat_fedora_connection_delete_submit($form, &$form_state) {
   $fedora_connection = $form['#fedora_connection'];
-  
+
   if ($form_state['values']['confirm']) {
     $fedora_connection = rainhat_fedora_connection_load($fedora_connection->id);
     entity_get_controller('rainhat_fedora_connection')->delete(array($fedora_connection->id));

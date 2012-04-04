@@ -7,8 +7,8 @@
  * This class uses the REST API, as described here:
  * https://wiki.duraspace.org/display/FEDORA35/REST+API
  *
- * This class uses drupal_http_request, and as such, is dependent on Drupal. 
- * 
+ * This class uses drupal_http_request, and as such, is dependent on Drupal.
+ *
  */
 
 class FedoraConnection {
@@ -22,18 +22,18 @@ class FedoraConnection {
     $this->password = $password;
     $this->baseurl = $url;
   }
-  
+
   /**
    * Check to see if a fedora repository exists and is usable using the url and username/password provided.
-   * 
-   * @return bool 
+   *
+   * @return bool
    */
   function check() {
-     
-    //Ingest and Purge a temporary object. 
+
+    //Ingest and Purge a temporary object.
     $request = $this->createNewEmptyObject();
-   
-    if ($request->code != "201"){
+
+    if ($request->code != "201") {
       return FALSE;
     }
     else{
@@ -41,45 +41,45 @@ class FedoraConnection {
       return TRUE;
     }
   }
-   
-  function createNewEmptyObject($pid = "new", $namespace = "rainhattest", $label = "rainhattest"){
-     
-    $options = array("namespace"=>$namespace, "label"=>$label);
+
+  function createNewEmptyObject($pid = "new", $namespace = "rainhattest", $label = "rainhattest") {
+
+    $options = array("namespace" => $namespace, "label" => $label);
     $url = $this->buildURL($options, $pid);
-    
+
     $request_options = array(
       'method' => 'POST',
-      'headers' => array("Authorization" => " Basic " . base64_encode($this->username . ':' . $this->password)),  
+      'headers' => array("Authorization" => " Basic " . base64_encode($this->username . ':' . $this->password)),
     );
-     
+
     return drupal_http_request($url, $request_options);
   }
-  
-  function purgeObject($pid){
-     
+
+  function purgeObject($pid) {
+
     $url = $this->buildURL(NULL, $pid);
-    
+
     $request_options = array(
       'method' => 'DELETE',
-      'headers' => array("Authorization" => " Basic " . base64_encode($this->username . ':' . $this->password)),  
+      'headers' => array("Authorization" => " Basic " . base64_encode($this->username . ':' . $this->password)),
     );
-     
+
     return drupal_http_request($url, $request_options);
   }
-  
-  function addDatastream($pid, $dsID, $controlGroup, $label, $data){
-    
-    $url = $this->buildURL(array('controlGroup'=>$controlGroup, 'label'=>$label), $pid . '/datastreams/' . $dsID);
+
+  function addDatastream($pid, $dsID, $controlGroup, $label, $data) {
+
+    $url = $this->buildURL(array('controlGroup' => $controlGroup, 'label' => $label), $pid . '/datastreams/' . $dsID);
     $request_options = array(
       'method' => 'POST',
-      'headers' => array("Authorization" => " Basic " . base64_encode($this->username . ':' . $this->password)),  
+      'headers' => array("Authorization" => " Basic " . base64_encode($this->username . ':' . $this->password)),
       'data' => $data,
     );
-    
+
     return drupal_http_request($url, $request_options);
   }
-   
-   
+
+
   /**
   * Utility function to build urls.
   */
@@ -100,7 +100,7 @@ class FedoraConnection {
     }
     return $url;
   }
-    
+
 }
 
 

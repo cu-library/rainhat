@@ -3,7 +3,7 @@
 /**
  * @file
  * A module which allows Drupal node data to be saved in a Fedora
- * Repository. 
+ * Repository.
  */
 
 /**
@@ -21,7 +21,7 @@ function rainhat_entity_info() {
       'label' => 'name',
     ),
   );
-  
+
   $return['rainhat_node_export'] = array(
     'label' => t('Node Data Export'),
     'controller class' => 'RainhatNodeExportController',
@@ -32,7 +32,7 @@ function rainhat_entity_info() {
       'label' => 'name',
     ),
   );
-    
+
   $return['rainhat_datastream'] = array(
     'label' => t('Datastream Definitions'),
     'controller class' => 'RainhatDatastreamController',
@@ -57,9 +57,9 @@ function rainhat_menu() {
   //This is the settings admin menu item.
   //This is where module wide config settings are set.
   $items['admin/config/system/rainhat'] = array(
-    'title' => 'Fedora Connection Defaults',    
-    'access arguments' => array('administer rainhat'),    
-    'description' => 'Set options for the rainhat module.',    
+    'title' => 'Fedora Connection Defaults',
+    'access arguments' => array('administer rainhat'),
+    'description' => 'Set options for the rainhat module.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_admin_form'),
     'file' => 'rainhat.moduleadmin.inc',
@@ -68,7 +68,7 @@ function rainhat_menu() {
 
   //Fedora Connection Administration ----------------------------------------------------
   $items['admin/structure/fedora'] = array(
-    'title' => 'Fedora Repository Connections and Node Export Settings',    
+    'title' => 'Fedora Repository Connections and Node Export Settings',
     'description' => 'Add, Edit, and Remove connections to Fedora Repositories and node data exports.',
     'page callback' => 'rainhat_fedoraconnection_list',
     'access arguments' => array('administer fedora connections node export'),
@@ -102,7 +102,7 @@ function rainhat_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fedoraconnection.inc',
   );
-  
+
   //Node Export Administration ----------------------------------------------------------
   $items['admin/structure/fedora/nodeexport'] = array(
     'title' => 'Node Exports',
@@ -135,7 +135,7 @@ function rainhat_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.nodeexport.inc',
   );
-  
+
   //Datastream Administration -----------------------------------------------------------
   $items['admin/structure/fedora/datastreams/%rainhat_node_export/add'] = array(
     'title' => 'Add a New Datastream Definition to a Node Export',
@@ -161,7 +161,7 @@ function rainhat_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.datastream.inc',
   );
-  
+
   return $items;
 
 }
@@ -215,39 +215,39 @@ function rainhat_datastream_load($id) {
 
 
 /**
- * Implements hook_node_insert()
- * 
+ * Implements hook_node_insert().
+ *
  * This hook runs after a node is saved into the database.
  */
 /*
 function rainhat_node_insert($node){
-  
-  //Load the node export entities  
+
+  //Load the node export entities
   $transformations = entity_load('rainhat_transformation');
   foreach ($transformations as $id => $transformation) {
     //Check to see if the node is one of the `hooked` node types
     if ($node->type == $transformation->hooked_type){
-      
+
       //Get the parent fedora connection data
       $connection = db_select('rainhat_fedora_connection', 'f')
       ->fields('f')
       ->condition('id', $transformation->parent_fedora_connection_id)
       ->execute()
       ->fetchObject();
-      
+
       //Create the fedora connection
       $fc = new FedoraConnection($connection->url, $connection->admin_username, $connection->admin_password);
-      
+
       //Check to see if the node has a pid attached to it yet
       $pid = "";
-      
+
       $nid_to_pid = db_select('rainhat_nid_to_pid', 'f')
       ->fields('f')
       ->condition('parent_transformation_id', $id)
       ->condition('nid', $node->nid)
       ->execute()
       ->fetchObject();
-                  
+
       if(empty($nid_to_pid)){
         $pid = $fc->createNewEmptyObject('new', $transformation->pid_prefix, $node->title)->data;
         $new_row = array('nid'=>$node->nid, 'pid'=>$pid, 'parent_transformation_id'=>$id);
@@ -255,29 +255,29 @@ function rainhat_node_insert($node){
         if (user_access('administer fedora connections node export')) {
           drupal_set_message(t('Nid: @nid is mapped to Pid: @pid.', array('@nid' => $node->nid, '@pid' => $pid)));
         }
-      } 
+      }
       else{
-        $pid = $nid_to_pid->pid;        
-      }      
-      
+        $pid = $nid_to_pid->pid;
+      }
+
       //Go through the datastreams for the particular transformation, and run them.
       $datastreams = db_select('rainhat_datastream', 'f')
       ->fields('f')
       ->condition('parent_transformation_id', $id)
       ->execute();
-      
-      foreach ($datastreams as $datastream){   
+
+      foreach ($datastreams as $datastream){
         if($datastream->type == 'XML'){
           if (user_access('administer fedora connections node export')) {
             dpm($datastream->php_script);
           }
           $new_datastream = eval($datastream->php_script);
-          $fc->addDatastream($pid, $datastream->datastream_id, 'X', $datastream->datastream_id, $new_datastream);  
+          $fc->addDatastream($pid, $datastream->datastream_id, 'X', $datastream->datastream_id, $new_datastream);
         }
       }
     }
   }
 }
-*/
+ */
 
 

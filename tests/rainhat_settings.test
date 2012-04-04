@@ -1,9 +1,15 @@
 <?php
 
+/**
+ * @file
+ * This test ensures the defaults for the module are set properly.
+ * This test also tests the module settings form is working properly.
+ */
+
 class RainhatModuleSettingsTest extends DrupalWebTestCase {
-  
+
   protected $privileged_user;
-  
+
   public function getInfo() {
     return array(
       'name' => 'Rainhat Module - Module Settings Testing',
@@ -11,28 +17,28 @@ class RainhatModuleSettingsTest extends DrupalWebTestCase {
       'group' => 'Rainhat',
     );
   }
-  
+
   public function setUp() {
-    parent::setUp('rainhat');    
+    parent::setUp('rainhat');
     $this->privileged_user = $this->drupalCreateUser(array(
       'administer rainhat',
     ));
     $this->drupalLogin($this->privileged_user);
   }
-  
+
   public function testRainhatSettings() {
-    
+
     //Ensure the defaults are correct
-    $this->assertEqual(variable_get('rainhat_default_fedora_url'), 
-                       'http://localhost:8080/fedora', 
+    $this->assertEqual(variable_get('rainhat_default_fedora_url'),
+                       'http://localhost:8080/fedora',
                        'The default fedora url is correct');
-    $this->assertEqual(variable_get('rainhat_default_fedora_admin_username'), 
-                       'fedoraAdmin', 
+    $this->assertEqual(variable_get('rainhat_default_fedora_admin_username'),
+                       'fedoraAdmin',
                        'The default fedora admin username is correct');
-    $this->assertEqual(variable_get('rainhat_default_fedora_admin_password'), 
-                       'fedoraAdmin', 
+    $this->assertEqual(variable_get('rainhat_default_fedora_admin_password'),
+                       'fedoraAdmin',
                        'The default fedora admin password is correct');
-     
+
     //Change the defaults
     $this->drupalGet('admin/config/system/rainhat');
     $form_values = array();
@@ -43,17 +49,19 @@ class RainhatModuleSettingsTest extends DrupalWebTestCase {
     $form_values['rainhat_fedora_admin_username'] = $username;
     $form_values['rainhat_fedora_admin_password'] = $password;
     $this->drupalPost('admin/config/system/rainhat', $form_values, t('Save settings'));
-    
-    //Ensure the defaults have actually changed. 
-    $this->assertEqual(variable_get('rainhat_default_fedora_url'), 
-                       $url, 
-                       'The default fedora url has been successfully changed');
-    $this->assertEqual(variable_get('rainhat_default_fedora_admin_username'), 
-                       $username, 
-                       'The default fedora admin username has been successfully changed');
-    $this->assertEqual(variable_get('rainhat_default_fedora_admin_password'), 
-                       $password, 
-                       'The default fedora admin password has been successfully changed');
+
+    //Ensure the defaults have actually changed.
+    $this->assertEqual(variable_get('rainhat_default_fedora_url'),
+    $url,
+    'The default fedora url has been successfully changed');
+
+    $this->assertEqual(variable_get('rainhat_default_fedora_admin_username'),
+    $username,
+    'The default fedora admin username has been successfully changed');
+
+    $this->assertEqual(variable_get('rainhat_default_fedora_admin_password'),
+    $password,
+    'The default fedora admin password has been successfully changed');
   }
-  
+
 }

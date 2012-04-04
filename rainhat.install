@@ -74,7 +74,7 @@ function rainhat_schema() {
 
   $schema['rainhat_node_export'] = array(
     'description' => 'Node Export',
-    'fields' => array(    
+    'fields' => array(
       'id' => array(
         'description' => 'id',
         'type' => 'serial',
@@ -116,7 +116,7 @@ function rainhat_schema() {
 
   $schema['rainhat_datastream'] = array(
     'description' => 'Datastream',
-    'fields' => array(    
+    'fields' => array(
       'id' => array(
         'description' => 'id',
         'type' => 'serial',
@@ -169,7 +169,7 @@ function rainhat_schema() {
         'length' => 1,
         'default' => '',
       ),
-      'mime_type' => array (
+      'mime_type' => array(
         'description' => 'location',
         'type' => 'varchar',
         'length' => 255,
@@ -184,10 +184,10 @@ function rainhat_schema() {
     ),
     'primary key' => array('id'),
   );
-  
+
   $schema['rainhat_nid_to_pid'] = array(
     'description' => 'NID -> PID',
-    'fields' => array(    
+    'fields' => array(
       'nid' => array(
         'description' => 'nid',
         'type' => 'int',
