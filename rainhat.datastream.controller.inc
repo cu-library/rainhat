@@ -23,6 +23,7 @@ class RainhatDatastreamController extends DrupalDefaultEntityController {
     $datastream->label = '';
     $datastream->location = '';
     $datastream->control_group = 'X';
+    $datastream->mime_type = '';
     return $datastream;
   }
 

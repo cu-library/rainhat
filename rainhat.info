@@ -5,7 +5,8 @@ version = 7.x-1.0
 package = Rainhat
 
 files[] = rainhat.module
-files[] = rainhat.test
+files[] = rainhat_settings.test
+files[] = rainhat_entity_crud.test
 
 files[] = rainhat.fedoraconnection.controller.inc
 files[] = rainhat.nodeexport.controller.inc

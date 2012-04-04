@@ -169,6 +169,12 @@ function rainhat_schema() {
         'length' => 1,
         'default' => '',
       ),
+      'mime_type' => array (
+        'description' => 'location',
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
     ),
     'foreign keys' => array(
       'parent_node_export_id' => array(

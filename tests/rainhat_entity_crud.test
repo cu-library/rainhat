@@ -1,0 +1,60 @@
+<?php
+
+//These tests will fail unless there is a fedora instance running 
+//at the default url and with the default username/password
+class RainhatEntityCRUDTest extends DrupalWebTestCase {
+  
+  protected $privileged_user;
+  
+  public function getInfo() {
+    return array(
+      'name' => 'Rainhat Module - Entity CRUD Testing',
+      'description' => 'Tests the rainhat module entities CRUD forms.',
+      'group' => 'Rainhat',
+    );
+  }
+  
+  public function setUp() {
+    parent::setUp('rainhat');    
+    $this->privileged_user = $this->drupalCreateUser(array(
+      'administer fedora connections node export',
+    ));
+    $this->drupalLogin($this->privileged_user);
+  }
+  
+  public function testFedoraConnections() {
+    $this->drupalGet('admin/structure/fedora/connections/add');
+    $form_values = array();    
+    $name = $this->randomName(10);
+    $form_values['name'] = $name;
+    $this->drupalPost('admin/config/system/rainhat', $form_values, t('Save'));
+    $this->assertNoText(t('No Fedora Connections...'), 'The text "No Fedora Connections..." does NOT appear on the fedora connections page.');
+    $this->clickLink('Edit');
+    $form_values = array();    
+    $form_values['url'] = $this->randomName(10);
+    $this->drupalPost('admin/config/system/rainhat', $form_values, t('Save'));
+    $this->assertText(t('The Fedora Repository is down, or the Fedora Connection data is incorrect.'), 'The correct error text appears when attempting to set the url to garbage.');
+    $this->drupalGet('admin/structure/fedora/connections');
+    $this->clickLink('Delete');
+    $this->assertText(t('This action cannot be undone, and will also delete any node exports set for this fedora connection.'), 'The correct text is displayed when deleting a fedora connection');
+    $this->clickLink('Cancel');
+    $this->assertText($name, 'The fedora connection is still present after canceling a deletion. ');
+    $this->clickLink('Delete');
+    $this->assertText(t('No Fedora Connections...'), 'The text "No Fedora Connections..." appears in the empty list of fedora connections.');
+    
+    
+  }
+  
+  public function testNodeExports() {
+   
+    
+    
+  }
+  
+  public function testDatastreams() {
+   
+    
+    
+  }
+  
+}
