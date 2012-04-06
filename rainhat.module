@@ -298,7 +298,6 @@ function rainhat_update_hooked_nodes($node){
             $node = node_load($node->nid);
             $field = field_get_items('node', $node, $datastream->file_field, 'und');
             $field = $field[0];
-            dpm($field);
             $fc->addDatastreamData($pid, $datastream->datastream_id, $datastream->control_group, $new_label, $field['filemime'], array($field['filename'] => '@'.drupal_realpath($field['uri']).';type='.$field['filemime']));
           }
           else{
