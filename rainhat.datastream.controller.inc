@@ -28,6 +28,7 @@ class RainhatDatastreamController extends DrupalDefaultEntityController {
   }
 
   public function save($datastream) {
+
     if (empty($datastream->id)) {
       drupal_write_record('rainhat_datastream', $datastream);
       module_invoke_all('entity_insert', $datastream, 'rainhat_datastream');

@@ -22,7 +22,7 @@ function rainhat_datastream_add($node_export) {
  */
 function rainhat_datastream_form($form, &$form_state, $datastream) {
   $form['#datastream'] = $datastream;
-
+  
   $parent_node_export = db_select('rainhat_node_export', 'rne')
       ->fields('rne')
       ->condition('id', $datastream->parent_node_export_id)
@@ -43,7 +43,7 @@ function rainhat_datastream_form($form, &$form_state, $datastream) {
   $form['label'] = array(
     '#type' => 'textfield',
     '#title' => t('Datastream Label'),
-    '#default_value' => check_plain($datastream->datastream_id),
+    '#default_value' => $datastream->label,
     '#size' => 50,
     '#maxlength' => 255,
     '#required' => TRUE,
@@ -273,7 +273,6 @@ function rainhat_datastream_form_submit($form, &$form_state) {
   $datastream->type = $form_state['values']['type'];
   $datastream->datastream_id = $form_state['values']['datastream_id'];
   $datastream->label = $form_state['values']['label'];
-
 
   if ($datastream->type == 'scripted') {
     $datastream->php_script = $form_state['values']['php_script'];

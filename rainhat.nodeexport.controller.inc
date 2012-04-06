@@ -38,6 +38,8 @@ class RainhatNodeExportController extends DrupalDefaultEntityController {
       $datastream = entity_get_controller('rainhat_datastream')->create($new_node_export->id);
       $datastream->datastream_id = 'DC';
       $datastream->type= 'scripted';
+      $datastream->label = 'DC for $node->title';
+      $datastream->mime_type = 'text/xml';
       $datastream->php_script = 'return "<oai_dc:dc xmlns:oai_dc=\\"http://www.openarchives.org/OAI/2.0/oai_dc/\\"
       xmlns:dc=\\"http://purl.org/dc/elements/1.1/\\"
       xmlns:xsi=\\"http://www.w3.org/2001/XMLSchema-instance\\"
@@ -76,6 +78,10 @@ class RainhatNodeExportController extends DrupalDefaultEntityController {
     // Though this sounds cruel, it's really for the best.
     $affected_datastreams = db_select('rainhat_datastream', 'rd')
       ->fields('rd', array('id'))
+      ->condition('parent_node_export_id', $ids, 'IN')
+      ->execute();
+      
+    db_delete('rainhat_nid_to_pid')
       ->condition('parent_node_export_id', $ids, 'IN')
       ->execute();
 

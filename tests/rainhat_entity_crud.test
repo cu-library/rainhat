@@ -28,33 +28,94 @@ class RainhatEntityCRUDTest extends DrupalWebTestCase {
   }
 
   public function testFedoraConnections() {
-    $this->drupalGet('admin/structure/fedora/connections/add');
+    //Visit the empty fedora connections page
+    $this->drupalGet('admin/structure/fedora/connections');
+    $this->assertText(t('No Fedora Connections...'), 'The text "No Fedora Connections..." appears in the empty list of fedora connections.');
+   
+    //Add a new fedora connection
+    $this->clickLink(t('Add a Fedora Repository connection'));
     $form_values = array();
     $name = $this->randomName(10);
     $form_values['name'] = $name;
-    $this->drupalPost('admin/config/system/rainhat', $form_values, t('Save'));
+    $this->drupalPost($this->url, $form_values, t('Save'));
+    
+    //Check to see if the new fedora connection was added
     $this->assertNoText(t('No Fedora Connections...'), 'The text "No Fedora Connections..." does NOT appear on the fedora connections page.');
-    $this->clickLink('Edit');
+    $this->assertText($name, 'The name of the new fedora connection apears on the fedora connection page.');
+    
+    //Check to see if the edit works correctly
+    $this->clickLink(t('Edit'));
+    $form_values = array();
+    $name = $this->randomName(10);
+    $form_values['name'] = $name;
+    $this->drupalPost($this->url, $form_values, t('Save'));
+    $this->assertText($name, 'The edited name of the new fedora connection apears on the fedora connection page.');
+    
+    //Check to see if adding another fedora connection of the same name causes an error
+    $this->clickLink(t('Add a Fedora Repository connection'));
+    $form_values = array();
+    $form_values['name'] = $name;
+    $this->drupalPost($this->url, $form_values, t('Save'));
+    $this->assertText(t('The name or url is not unique.'), 'Attempting to add a fedora connection with the same name causes an error.');
+    
+    //Check to see if the connection validation works correctly
+    $this->drupalGet('admin/structure/fedora/connections');
+    $this->clickLink(t('Edit'));
     $form_values = array();
     $form_values['url'] = $this->randomName(10);
-    $this->drupalPost('admin/config/system/rainhat', $form_values, t('Save'));
+    $this->drupalPost($this->url, $form_values, t('Save'));
     $this->assertText(t('The Fedora Repository is down, or the Fedora Connection data is incorrect.'), 'The correct error text appears when attempting to set the url to garbage.');
+    
+    //Ensure delete works correctly
     $this->drupalGet('admin/structure/fedora/connections');
-    $this->clickLink('Delete');
+    $this->clickLink(t('Delete'));
     $this->assertText(t('This action cannot be undone, and will also delete any node exports set for this fedora connection.'), 'The correct text is displayed when deleting a fedora connection');
-    $this->clickLink('Cancel');
+    $this->clickLink(t('Cancel'));
     $this->assertText($name, 'The fedora connection is still present after canceling a deletion. ');
-    $this->clickLink('Delete');
+    $this->clickLink(t('Delete'));
+    $this->drupalPost($this->url, array(), t('Delete'));
     $this->assertText(t('No Fedora Connections...'), 'The text "No Fedora Connections..." appears in the empty list of fedora connections.');
-
+    $this->drupalGet('admin/structure/fedora/connections');
+    $this->assertNoText($name, 'The name of the deleted fedora connection is not present on the listing of fedora connections.');
   }
 
+/*
   public function testNodeExports() {
-
+    $this->drupalGet('admin/structure/fedora/connections');
+    $this->assertText(t('No Fedora Connections...'), 'The text "No Fedora Connections..." appears in the empty list of fedora connections.');
+    $this->drupalGet('admin/structure/fedora/nodeexport');
+    $this->assertText(t('No Node Exports...'), 'The text "No Node Exports..." appears in the empty list of node exports.');
+    $this->drupalGet('admin/structure/fedora/nodeexport/add');
+    $this->assertText(t('You must first create a Fedora Repository connection.'), 'The text "You must first create a Fedora Repository connection." appears when attempting to add a node export before a fedora connection.');
+    $this->clickLink(t('Add a Fedora Repository connection'));
+    $form_values = array();
+    $connection_name = $this->randomName(10);
+    $form_values['name'] = $connection_name;
+    $this->drupalPost('admin/structure/fedora/connections/add', $form_values, t('Save'));
+    $this->assertNoText(t('No Fedora Connections...'), 'The text "No Fedora Connections..." does NOT appear on the fedora connections page.');
+    $form_values = array();
+    $node_export_name = $this->randomName(10);
+    $form_values['name'] = $node_export_name;
+    $form_values['pid_prefix'] = 'rainhattest';
+    $this->drupalPost('admin/structure/fedora/nodeexport/add', $form_values, t('Save'));
+    $this->assertNoText(t('No Node Exports...'), 'The text "No Node Exports..." does NOT appear on the node exports page.');
+    $this->assertText($node_export_name, 'The name of the new node export apears on the node exports page.');
+    $this->assertText($connection_name, 'The name of the new node export\' parent fedora connection apears on the node exports page.');
+    $form_values = array();
+    $newexportname = $this->randomName(10);
+    $form_values['name'] = $node_export_name;
+    $form_values['pid_prefix'] = 'rainhattest';
+    $this->drupalPost('admin/structure/fedora/nodeexport/add', $form_values, t('Save'));
+    
+    
+    
+    
   }
-
+*/
+  /*
   public function testDatastreams() {
 
   }
+  */
 
 }

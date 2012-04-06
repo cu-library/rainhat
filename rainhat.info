@@ -1,7 +1,7 @@
 name = Rainhat
 description = Drupal/Fedora Integration
 core = 7.x
-version = 7.x-1.0
+version = 7.x-0.7
 package = Rainhat
 
 files[] = rainhat.module

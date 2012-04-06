@@ -7,8 +7,6 @@
  * This class uses the REST API, as described here:
  * https://wiki.duraspace.org/display/FEDORA35/REST+API
  *
- * This class uses drupal_http_request, and as such, is dependent on Drupal.
- *
  */
 
 class FedoraConnection {
@@ -31,9 +29,9 @@ class FedoraConnection {
   function check() {
 
     //Ingest and Purge a temporary object.
-    $request = $this->createNewEmptyObject();
+    $request = $this->ingestNewEmptyObject();
 
-    if ($request->code != "201") {
+    if ($request->errorno != "201") {
       return FALSE;
     }
     else{
@@ -42,41 +40,33 @@ class FedoraConnection {
     }
   }
 
-  function createNewEmptyObject($pid = "new", $namespace = "rainhattest", $label = "rainhattest") {
-
+  function ingestNewEmptyObject($pid = "new", $namespace = "rainhattest", $label = "rainhattest") {    
     $options = array("namespace" => $namespace, "label" => $label);
-    $url = $this->buildURL($options, $pid);
-
-    $request_options = array(
-      'method' => 'POST',
-      'headers' => array("Authorization" => " Basic " . base64_encode($this->username . ':' . $this->password)),
-    );
-
-    return drupal_http_request($url, $request_options);
+    $url = $this->buildURL($options, $pid);   
+    return $this->execCurl($url);    
   }
 
+  function updateObject($pid, $options){
+    $url = $this->buildURL($options, $pid);   
+    return $this->execCurl($url, '', 'PUT');    
+  }
+  
   function purgeObject($pid) {
-
     $url = $this->buildURL(NULL, $pid);
-
-    $request_options = array(
-      'method' => 'DELETE',
-      'headers' => array("Authorization" => " Basic " . base64_encode($this->username . ':' . $this->password)),
-    );
-
-    return drupal_http_request($url, $request_options);
+    return $this->execCurl($url, '', 'DELETE');
   }
 
-  function addDatastream($pid, $dsID, $controlGroup, $label, $data) {
+  function addDatastreamData($pid, $dsID, $controlGroup, $label, $mime_type, $data) {
+    $options = array('controlGroup' => $controlGroup, 'dsLabel' => $label, );
+    $url = $this->buildURL($options, $pid . '/datastreams/' . $dsID);
+    return $this->execCurl($url, $mime_type, 'POST', $data); 
+  }
+  
+  function addDatastreamLocation($pid, $dsID, $controlGroup, $label, $mime_type, $location) {
+    $options = array('controlGroup' => $controlGroup, 'dsLabel' => $label, 'dsLocation' => $location);
+    $url = $this->buildURL($options, $pid . '/datastreams/' . $dsID);
+    return $this->execCurl($url, $mime_type); 
 
-    $url = $this->buildURL(array('controlGroup' => $controlGroup, 'label' => $label), $pid . '/datastreams/' . $dsID);
-    $request_options = array(
-      'method' => 'POST',
-      'headers' => array("Authorization" => " Basic " . base64_encode($this->username . ':' . $this->password)),
-      'data' => $data,
-    );
-
-    return drupal_http_request($url, $request_options);
   }
 
 
@@ -99,6 +89,32 @@ class FedoraConnection {
       $url = $url . '?' . http_build_query($options, '', '&');
     }
     return $url;
+  }
+  
+  protected function execCurl($url, $mime = '', $verb = 'POST', $post = array()){
+    $ch = curl_init();
+    if($verb == 'POST'){
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+    }
+    else{
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);      
+    }    
+    if(!is_array($post)){
+      curl_setopt($ch, CURLOPT_HTTPHEADER, Array("Content-Type: ".$mime));
+    }
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC); 
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_USERPWD, $this->username . ":" . $this->password);
+   
+    $data = curl_exec($ch);
+    $errorno = curl_getinfo($ch, CURLINFO_HTTP_CODE);    
+    curl_close ($ch);
+    
+    $return = new stdClass();
+    $return->data = $data;
+    $return->errorno = $errorno;
+    return $return;    
   }
 
 }

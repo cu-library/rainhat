@@ -24,6 +24,26 @@ define('RAINHAT_DEFAULT_FEDORA_ADMIN_USERNAME', 'fedoraAdmin');
  */
 define('RAINHAT_DEFAULT_FEDORA_ADMIN_PASSWORD', 'fedoraAdmin');
 
+/**
+ * Implements hook_requirements().
+ * Good enough for simpletest, good enough for me. 
+ */
+function rainhat_requirements($phase) {
+  $requirements = array();
+  
+  $has_curl = function_exists('curl_init');
+ 
+  $requirements['curl'] = array(
+    'title' => t('cURL'),
+    'value' => $has_curl ? t('Enabled') : t('Not found'),
+  );
+  if (!$has_curl) {
+    $requirements['curl']['severity'] = REQUIREMENT_ERROR;
+    $requirements['curl']['description'] = t('Rainhat could not be installed because the PHP <a href="@curl_url">cURL</a> library is not available.', array('@curl_url' => 'http://php.net/manual/en/curl.setup.php'));
+  }
+
+  return $requirements;
+}
 
 /**
  * Implements hook_schema().
