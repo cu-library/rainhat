@@ -78,39 +78,28 @@ function rainhat_menu() {
 
   $items = array();
 
-  //This is the settings admin menu item.
-  //This is where module wide config settings are set.
-  $items['admin/config/system/rainhat'] = array(
-    'title' => 'Fedora Connection Defaults',
-    'access arguments' => array('administer rainhat'),
-    'description' => 'Set options for the rainhat module.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_admin_form'),
-    'file' => 'rainhat.moduleadmin.inc',
-    'type' => MENU_NORMAL_ITEM,
-  );
 
   //Fedora Connection Administration ----------------------------------------------------
-  $items['admin/structure/fedora'] = array(
-    'title' => 'Fedora Repository Connections',
-    'description' => 'Fedora Repository Connections and Settings',
+  $items['admin/config/system/fedora'] = array(
+    'title' => 'Fedora Repository Settings',
+    'description' => 'Fedora Repository Connections and Node Import/Export Settings',
     'page callback' => 'rainhat_fedoraconnection_list',
     'access arguments' => array('administer fedora connections node export import'),
     'file' => 'rainhat.fedoraconnection.inc',
     'type' => MENU_NORMAL_ITEM,
   );
-  $items['admin/structure/fedora/connections'] = array(
+  $items['admin/config/system/fedora/connections'] = array(
     'title' => 'Connections',
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
-  $items['admin/structure/fedora/connections/add'] = array(
+  $items['admin/config/system/fedora/fedora/connections/add'] = array(
     'title' => 'Add a Fedora Repository connection',
     'page callback' => 'rainhat_fedora_connection_add',
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'rainhat.fedoraconnection.inc',
   );
-  $items['admin/structure/fedora/connections/%rainhat_fedora_connection/edit'] = array(
+  $items['admin/config/system/fedora/connections/%rainhat_fedora_connection/edit'] = array(
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_fedora_connection_form', 4),
@@ -118,7 +107,7 @@ function rainhat_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fedoraconnection.inc',
   );
-  $items['admin/structure/fedora/connections/%rainhat_fedora_connection/delete'] = array(
+  $items['admin/config/system/fedora/connections/%rainhat_fedora_connection/delete'] = array(
     'title' => 'Delete',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_fedora_connection_delete', 4),
@@ -126,9 +115,18 @@ function rainhat_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fedoraconnection.inc',
   );
+  $items['admin/config/system/fedora/connections/defaults'] = array(
+    'title' => 'Fedora Connection Defaults',
+    'access arguments' => array('administer rainhat'),
+    'description' => 'Set options for the rainhat module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_admin_form'),
+    'file' => 'rainhat.moduleadmin.inc',
+    'type' => MENU_CALLBACK,
+  );
 
   //Node Export Administration ----------------------------------------------------------
-  $items['admin/structure/fedora/nodeexport'] = array(
+  $items['admin/config/system/fedora/nodeexport'] = array(
     'title' => 'Node Exports',
     'access arguments' => array('administer fedora connections node export import'),
     'page callback' => 'rainhat_node_export_list',
@@ -136,58 +134,58 @@ function rainhat_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
   );
-  $items['admin/structure/fedora/nodeexport/add'] = array(
+  $items['admin/config/system/fedora/nodeexport/add'] = array(
     'title' => 'New Node Export',
     'page callback' => 'rainhat_node_export_add',
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'rainhat.nodeexport.inc',
   );
-  $items['admin/structure/fedora/nodeexport/%rainhat_node_export/edit'] = array(
+  $items['admin/config/system/fedora/nodeexport/%rainhat_node_export/edit'] = array(
     'title' => 'Edit a Node Export',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_node_export_form', 4),
+    'page arguments' => array('rainhat_node_export_form', 5),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.nodeexport.inc',
   );
-  $items['admin/structure/fedora/nodeexport/%rainhat_node_export/delete'] = array(
+  $items['admin/config/system/fedora/nodeexport/%rainhat_node_export/delete'] = array(
     'title' => 'Delete a Node Export',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_node_export_delete', 4),
+    'page arguments' => array('rainhat_node_export_delete', 5),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.nodeexport.inc',
   );
 
   //Datastream Administration -----------------------------------------------------------
-  $items['admin/structure/fedora/datastreams/%rainhat_node_export/add'] = array(
+  $items['admin/config/system/fedora/datastreams/%rainhat_node_export/add'] = array(
     'title' => 'Add a New Datastream Definition to a Node Export',
     'page callback' => 'rainhat_datastream_add',
-    'page arguments' => array(4),
+    'page arguments' => array(5),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.datastream.inc',
   );
-  $items['admin/structure/fedora/datastreams/%rainhat_datastream/edit'] = array(
+  $items['admin/config/system/fedora/datastreams/%rainhat_datastream/edit'] = array(
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_datastream_form', 4),
+    'page arguments' => array('rainhat_datastream_form', 5),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.datastream.inc',
   );
-  $items['admin/structure/fedora/datastreams/%rainhat_datastream/delete'] = array(
+  $items['admin/config/system/fedora/datastreams/%rainhat_datastream/delete'] = array(
     'title' => 'Delete',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_datastream_delete', 4),
+    'page arguments' => array('rainhat_datastream_delete', 5),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.datastream.inc',
   );
 
   //Node Import Administration ----------------------------------------------------------
-  $items['admin/structure/fedora/nodeimport'] = array(
+  $items['admin/config/system/fedora/nodeimport'] = array(
     'title' => 'Node Imports',
     'access arguments' => array('administer fedora connections node export import'),
     'page callback' => 'rainhat_node_import_list',
@@ -195,59 +193,59 @@ function rainhat_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
   );
-  $items['admin/structure/fedora/nodeimport/add'] = array(
+  $items['admin/config/system/fedora/nodeimport/add'] = array(
     'title' => 'New Node Import',
     'page callback' => 'rainhat_node_import_add',
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'rainhat.nodeimport.inc',
   );
-  $items['admin/structure/fedora/nodeimport/%rainhat_node_import/edit'] = array(
+  $items['admin/config/system/fedora/nodeimport/%rainhat_node_import/edit'] = array(
     'title' => 'Edit a Node Import',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_node_import_form', 4),
+    'page arguments' => array('rainhat_node_import_form', 5),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.nodeimport.inc',
   );
-  $items['admin/structure/fedora/nodeimport/%rainhat_node_import/delete'] = array(
+  $items['admin/config/system/fedora/nodeimport/%rainhat_node_import/delete'] = array(
     'title' => 'Delete a Node Import',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_node_import_delete', 4),
+    'page arguments' => array('rainhat_node_import_delete', 5),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.nodeimport.inc',
   );
-  $items['admin/structure/fedora/nodeimport/%rainhat_node_import/run'] = array(
+  $items['admin/config/system/fedora/nodeimport/%rainhat_node_import/run'] = array(
     'title' => 'Run a Node Import',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_node_import_run_form', 4),
+    'page arguments' => array('rainhat_node_import_run_form', 5),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.nodeimport.run.inc',
   );
   
   //Field Import Administration -----------------------------------------------------------
-  $items['admin/structure/fedora/fieldimport/%rainhat_node_import/%/add'] = array(
+  $items['admin/config/system/fedora/fieldimport/%rainhat_node_import/%/add'] = array(
     'title' => 'Add a New Field Definition to a Node Import',
     'page callback' => 'rainhat_field_import_add',
-    'page arguments' => array(4, 5),
+    'page arguments' => array(5, 6),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fieldimport.inc',
   );
-  $items['admin/structure/fedora/fieldimport/%rainhat_field_import/edit'] = array(
+  $items['admin/config/system/fedora/fieldimport/%rainhat_field_import/edit'] = array(
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_field_import_form', 4),
+    'page arguments' => array('rainhat_field_import_form', 5),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fieldimport.inc',
   );
-  $items['admin/structure/fedora/fieldimport/%rainhat_field_import/delete'] = array(
+  $items['admin/config/system/fedora/fieldimport/%rainhat_field_import/delete'] = array(
     'title' => 'Delete',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_field_import_delete', 4),
+    'page arguments' => array('rainhat_field_import_delete', 5),
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fieldimport.inc',

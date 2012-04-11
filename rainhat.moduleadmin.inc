@@ -64,5 +64,6 @@ function rainhat_admin_form_submit($form, &$form_state) {
     $form_state['values']['rainhat_fedora_admin_password']);
 
   drupal_set_message(t('The settings have been saved'));
+  $form_state['redirect'] = 'admin/config/system/fedora/connections';
 
 }

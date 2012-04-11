@@ -51,10 +51,10 @@ function rainhat_node_import_list() {
         ->execute()
         ->fetchObject();
       if($field_import === FALSE){
-        $field_list .= ' - ' . l(t('Add Field Import'), 'admin/structure/fedora/fieldimport/'.$id.'/'.$field['field_name'].'/add');
+        $field_list .= ' - ' . l(t('Add Field Import'), 'admin/config/system/fedora/fieldimport/'.$id.'/'.$field['field_name'].'/add');
       } else {      
-        $field_list .= ' - ' . l(t('Edit'), 'admin/structure/fedora/fieldimport/' . $field_import->id . '/edit');
-        $field_list .= ', ' . l(t('Delete'), 'admin/structure/fedora/fieldimport/' . $field_import->id . '/delete');      
+        $field_list .= ' - ' . l(t('Edit'), 'admin/config/system/fedora/fieldimport/' . $field_import->id . '/edit');
+        $field_list .= ', ' . l(t('Delete'), 'admin/config/system/fedora/fieldimport/' . $field_import->id . '/delete');      
       }
 
       $field_list .= '<br />';
@@ -62,11 +62,11 @@ function rainhat_node_import_list() {
 
     $row[] = $field_list;
 
-    $act = l(t('Edit'), "admin/structure/fedora/nodeimport/$id/edit");
+    $act = l(t('Edit'), "admin/config/system/fedora/nodeimport/$id/edit");
     $act .= ', ';
-    $act .= l(t('Delete'), "admin/structure/fedora/nodeimport/$id/delete");
+    $act .= l(t('Delete'), "admin/config/system/fedora/nodeimport/$id/delete");
     $act .= ', ';
-    $act .= l(t('Run Import'), "admin/structure/fedora/nodeimport/$id/run");
+    $act .= l(t('Run Import'), "admin/config/system/fedora/nodeimport/$id/run");
     $row[] = $act;
 
     $rows[] = $row;
@@ -95,7 +95,7 @@ function rainhat_node_import_add() {
 
   if ($parent_connections === FALSE) {
     drupal_set_message(t('You must first create a Fedora Repository connection.'), 'error');
-    drupal_goto('admin/structure/fedora/connections');
+    drupal_goto('admin/config/system/fedora/connections');
   }
 
   $node_import = entity_get_controller('rainhat_node_import')->create();
@@ -201,14 +201,14 @@ function rainhat_node_import_form_submit($form, &$form_state) {
   
   entity_get_controller('rainhat_node_import')->save($node_import);
 
-  $form_state['redirect'] = 'admin/structure/fedora/nodeimport';
+  $form_state['redirect'] = 'admin/config/system/fedora/nodeimport';
 }
 
 function rainhat_node_import_delete($form, &$form_state, $node_import) {
   $form['#node_import'] = $node_import;
   return confirm_form($form,
     t('Are you sure you want to delete @name?', array('@name' => $node_import->name)),
-    '/admin/structure/fedora/nodeimport',
+    '/admin/config/system/fedora/nodeimport',
     t('This action cannot be undone, and will delete the field imports associtated with this Node Import.'),
     t('Delete'),
     t('Cancel')
@@ -228,7 +228,7 @@ function rainhat_node_import_delete_submit($form, &$form_state) {
     unset($_GET['destination']);
   }
   else {
-    $destination = array('destination' => '/admin/structure/fedora/nodeimport');
+    $destination = array('destination' => '/admin/config/system/fedora/nodeimport');
   }
   $form_state['redirect'] = $destination['destination'];
 }

@@ -101,7 +101,7 @@ function rainhat_field_import_form_submit($form, &$form_state) {
   // Invoke the save() method that we added to the controller.
   entity_get_controller('rainhat_field_import')->save($field_import);
   drupal_set_message(t('Field Import saved.'));
-  $form_state['redirect'] = 'admin/structure/fedora/nodeimport';
+  $form_state['redirect'] = 'admin/config/system/fedora/nodeimport';
 }
 
 function rainhat_field_import_delete($form, &$form_state, $field_import) {
@@ -109,7 +109,7 @@ function rainhat_field_import_delete($form, &$form_state, $field_import) {
 
   return confirm_form($form,
     t('Are you sure you want to delete this field import?'),
-    'admin/structure/fedora/nodeimport',
+    'admin/config/system/fedora/nodeimport',
     t('This action cannot be undone.'),
     t('Delete'),
     t('Cancel')
@@ -131,7 +131,7 @@ function rainhat_field_import_delete_submit($form, &$form_state) {
     unset($_GET['destination']);
   }
   else {
-    $destination = array('destination' => 'admin/structure/fedora/nodeimport');
+    $destination = array('destination' => 'admin/config/system/fedora/nodeimport');
   }
   $form_state['redirect'] = $destination['destination'];
 }

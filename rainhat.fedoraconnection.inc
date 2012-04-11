@@ -25,9 +25,9 @@ function rainhat_fedoraconnection_list() {
     $row[] = check_plain($fedora_connection->name);
     $row[] = l($fedora_connection->url, $fedora_connection->url . "/admin") ;
 
-    $act = l(t('Edit'), "admin/structure/fedora/connections/$id/edit");
+    $act = l(t('Edit'), "admin/config/system/fedora/connections/$id/edit");
     $act .= ', ';
-    $act .= l(t('Delete'), "admin/structure/fedora/connections/$id/delete");
+    $act .= l(t('Delete'), "admin/config/system/fedora/connections/$id/delete");
     $row[] = $act;
 
     $rows[] = $row;
@@ -38,6 +38,10 @@ function rainhat_fedoraconnection_list() {
     '#header' => $header,
     '#rows' => $rows,
     '#empty' => t('No Fedora Connections...'),
+  );
+  $elements['settings'] = array(
+    '#markup' => l(t('Edit the Fedora Connection Defaults'), 'admin/config/system/fedora/connections/defaults'),
+  
   );
   return $elements;
 }
@@ -142,14 +146,14 @@ function rainhat_fedora_connection_form_submit($form, &$form_state) {
 
   entity_get_controller('rainhat_fedora_connection')->save($fedora_connection);
   drupal_set_message(t('Fedora Connection saved.'));
-  $form_state['redirect'] = 'admin/structure/fedora/connections';
+  $form_state['redirect'] = 'admin/config/system/fedora/connections';
 }
 
 function rainhat_fedora_connection_delete($form, &$form_state, $fedora_connection) {
   $form['#fedora_connection'] = $fedora_connection;
   return confirm_form($form,
     t('Are you sure you want to delete @f?', array('@f' => $fedora_connection->name)),
-    'admin/structure/fedora/connections',
+    'admin/config/system/fedora/connections',
     t('This action cannot be undone, and will also delete any node exports set for this fedora connection.'),
     t('Delete'),
     t('Cancel')
@@ -169,7 +173,7 @@ function rainhat_fedora_connection_delete_submit($form, &$form_state) {
     unset($_GET['destination']);
   }
   else {
-    $destination = array('destination' => 'admin/structure/fedora/connections');
+    $destination = array('destination' => 'admin/config/system/fedora/connections');
   }
   $form_state['redirect'] = $destination['destination'];
 }

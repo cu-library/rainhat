@@ -307,7 +307,7 @@ function rainhat_datastream_form_submit($form, &$form_state) {
   // Invoke the save() method that we added to the controller.
   entity_get_controller('rainhat_datastream')->save($datastream);
   drupal_set_message(t('Datastream saved.'));
-  $form_state['redirect'] = 'admin/structure/fedora/nodeexport';
+  $form_state['redirect'] = 'admin/config/system/fedora/nodeexport';
 }
 
 function rainhat_datastream_delete($form, &$form_state, $datastream) {
@@ -315,7 +315,7 @@ function rainhat_datastream_delete($form, &$form_state, $datastream) {
 
   return confirm_form($form,
     t('Are you sure you want to delete @f?', array('@f' => $datastream->datastream_id)),
-    'admin/structure/fedora/nodeexport',
+    'admin/config/system/fedora/nodeexport',
     t('This action cannot be undone.'),
     t('Delete'),
     t('Cancel')
@@ -337,7 +337,7 @@ function rainhat_datastream_delete_submit($form, &$form_state) {
     unset($_GET['destination']);
   }
   else {
-    $destination = array('destination' => 'admin/structure/fedora/nodeexport');
+    $destination = array('destination' => 'admin/config/system/fedora/nodeexport');
   }
   $form_state['redirect'] = $destination['destination'];
 }

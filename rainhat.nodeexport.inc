@@ -48,18 +48,18 @@ function rainhat_node_export_list() {
     $datastream_list = "";
     foreach ($datastreams as $datastream) {
       $datastream_list .= check_plain($datastream->datastream_id) . ', ' . ucfirst(check_plain($datastream->type));
-      $datastream_list .= ' - ' . l(t('Edit'), 'admin/structure/fedora/datastreams/' . $datastream->id . '/edit');
-      $datastream_list .= ', ' . l(t('Delete'), 'admin/structure/fedora/datastreams/' . $datastream->id . '/delete');
+      $datastream_list .= ' - ' . l(t('Edit'), 'admin/config/system/fedora/datastreams/' . $datastream->id . '/edit');
+      $datastream_list .= ', ' . l(t('Delete'), 'admin/config/system/fedora/datastreams/' . $datastream->id . '/delete');
       $datastream_list .= '<br />';
     }
 
-    $datastream_list .= l(t('Add New Datastream'), 'admin/structure/fedora/datastreams/' . $id . '/add');
+    $datastream_list .= l(t('Add New Datastream'), 'admin/config/system/fedora/datastreams/' . $id . '/add');
 
     $row[] = $datastream_list;
 
-    $act = l(t('Edit'), "admin/structure/fedora/nodeexport/$id/edit");
+    $act = l(t('Edit'), "admin/config/system/fedora/nodeexport/$id/edit");
     $act .= ', ';
-    $act .= l(t('Delete'), "admin/structure/fedora/nodeexport/$id/delete");
+    $act .= l(t('Delete'), "admin/config/system/fedora/nodeexport/$id/delete");
     $row[] = $act;
 
     $rows[] = $row;
@@ -88,7 +88,7 @@ function rainhat_node_export_add() {
 
   if ($parent_connections === FALSE) {
     drupal_set_message(t('You must first create a Fedora Repository connection.'), 'error');
-    drupal_goto('admin/structure/fedora/connections');
+    drupal_goto('admin/config/system/fedora/connections');
   }
 
   $node_export = entity_get_controller('rainhat_node_export')->create();
@@ -209,14 +209,14 @@ function rainhat_node_export_form_submit($form, &$form_state) {
   
   entity_get_controller('rainhat_node_export')->save($node_export);
 
-  $form_state['redirect'] = 'admin/structure/fedora/nodeexport';
+  $form_state['redirect'] = 'admin/config/system/fedora/nodeexport';
 }
 
 function rainhat_node_export_delete($form, &$form_state, $node_export) {
   $form['#node_export'] = $node_export;
   return confirm_form($form,
     t('Are you sure you want to delete @name?', array('@name' => $node_export->name)),
-    '/admin/structure/fedora/nodeexport',
+    '/admin/config/system/fedora/nodeexport',
     t('This action cannot be undone, and will delete the datastreams associtated with this Node Export.'),
     t('Delete'),
     t('Cancel')
@@ -236,7 +236,7 @@ function rainhat_node_export_delete_submit($form, &$form_state) {
     unset($_GET['destination']);
   }
   else {
-    $destination = array('destination' => '/admin/structure/fedora/nodeexport');
+    $destination = array('destination' => '/admin/config/system/fedora/nodeexport');
   }
   $form_state['redirect'] = $destination['destination'];
 }
