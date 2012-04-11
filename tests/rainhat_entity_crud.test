@@ -22,7 +22,7 @@ class RainhatEntityCRUDTest extends DrupalWebTestCase {
   public function setUp() {
     parent::setUp('rainhat');
     $this->privileged_user = $this->drupalCreateUser(array(
-      'administer fedora connections node export',
+      'administer fedora connections node export import',
     ));
     $this->drupalLogin($this->privileged_user);
   }

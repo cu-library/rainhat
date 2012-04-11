@@ -12,8 +12,8 @@ files[] = tests/rainhat_entity_crud.test
 files[] = rainhat.fedoraconnection.controller.inc
 files[] = rainhat.nodeexport.controller.inc
 files[] = rainhat.datastream.controller.inc
+files[] = rainhat.nodeimport.controller.inc
+files[] = rainhat.fieldimport.controller.inc
 files[] = rainhat.fedoraapi.inc
-
-
 
 configure = admin/config/system/rainhat

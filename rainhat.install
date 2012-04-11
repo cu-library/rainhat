@@ -41,7 +41,6 @@ function rainhat_requirements($phase) {
     $requirements['curl']['severity'] = REQUIREMENT_ERROR;
     $requirements['curl']['description'] = t('Rainhat could not be installed because the PHP <a href="@curl_url">cURL</a> library is not available.', array('@curl_url' => 'http://php.net/manual/en/curl.setup.php'));
   }
-
   return $requirements;
 }
 
@@ -233,6 +232,93 @@ function rainhat_schema() {
       ),
     ),
   );
+  
+  $schema['rainhat_node_import'] = array(
+    'description' => 'Node Import',
+    'fields' => array(
+      'id' => array(
+        'description' => 'id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'name',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'parent_fedora_connection_id' => array(
+        'description' => 'parent fedora connection id {rainhat_fedora_connection}.id',
+        'type' => 'int',
+      ),
+      'hooked_type' => array(
+        'description' => 'hooked type',
+        'type' => 'varchar',
+        'length' => 255,
+      ),
+    ),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
+    'foreign keys' => array(
+      'parent_fedora_connection' => array(
+        'table' => 'rainhat_fedora_connection',
+        'columns' => array('parent_fedora_connection_id' => 'id'),
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  
+  
+  $schema['rainhat_field_import'] = array(
+    'description' => 'Field Import Definition',
+    'fields' => array(
+      'id' => array(
+        'description' => 'id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'field_id' => array(
+        'description' => 'datastream_id',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'type' => array(
+        'description' => 'type',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'php_script' => array(
+        'description' => 'php_script',
+        'type' => 'text',
+      ),
+      'datastream_id' => array(
+        'description' => 'datastream_id',
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'parent_node_import_id' => array(
+        'description' => 'parent node import id {rainhat_node_import}.id',
+        'type' => 'int',
+      ),
+    ),
+    'foreign keys' => array(
+      'parent_node_import_id' => array(
+        'table' => 'rainhat_node_import',
+        'columns' => array('rainhat_node_import' => 'id'),
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  
 
   return $schema;
 }

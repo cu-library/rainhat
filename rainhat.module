@@ -32,7 +32,7 @@ function rainhat_entity_info() {
       'label' => 'name',
     ),
   );
-
+  
   $return['rainhat_datastream'] = array(
     'label' => t('Datastream Definitions'),
     'controller class' => 'RainhatDatastreamController',
@@ -42,8 +42,32 @@ function rainhat_entity_info() {
       'id' => 'id',
       'label' => 'datastream_id',
     ),
-
   );
+  
+  $return['rainhat_node_import'] = array(
+    'label' => t('Node Data Import'),
+    'controller class' => 'RainhatNodeImportController',
+    'base table' => 'rainhat_node_import',
+    'fieldable' => FALSE,
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'name',
+    ),
+  );
+  
+  
+  $return['rainhat_field_import'] = array(
+    'label' => t('Field Import Definition'),
+    'controller class' => 'RainhatFieldImportController',
+    'base table' => 'rainhat_field_import',
+    'fieldable' => FALSE,
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'field_id',
+    ),
+  );
+
+
   return $return;
 }
 
@@ -71,7 +95,7 @@ function rainhat_menu() {
     'title' => 'Fedora Repository Connections',
     'description' => 'Fedora Repository Connections and Settings',
     'page callback' => 'rainhat_fedoraconnection_list',
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'file' => 'rainhat.fedoraconnection.inc',
     'type' => MENU_NORMAL_ITEM,
   );
@@ -82,7 +106,7 @@ function rainhat_menu() {
   $items['admin/structure/fedora/connections/add'] = array(
     'title' => 'Add a Fedora Repository connection',
     'page callback' => 'rainhat_fedora_connection_add',
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'rainhat.fedoraconnection.inc',
   );
@@ -90,7 +114,7 @@ function rainhat_menu() {
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_fedora_connection_form', 4),
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fedoraconnection.inc',
   );
@@ -98,7 +122,7 @@ function rainhat_menu() {
     'title' => 'Delete',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_fedora_connection_delete', 4),
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.fedoraconnection.inc',
   );
@@ -106,7 +130,7 @@ function rainhat_menu() {
   //Node Export Administration ----------------------------------------------------------
   $items['admin/structure/fedora/nodeexport'] = array(
     'title' => 'Node Exports',
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'page callback' => 'rainhat_node_export_list',
     'file' => 'rainhat.nodeexport.inc',
     'type' => MENU_LOCAL_TASK,
@@ -115,7 +139,7 @@ function rainhat_menu() {
   $items['admin/structure/fedora/nodeexport/add'] = array(
     'title' => 'New Node Export',
     'page callback' => 'rainhat_node_export_add',
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'rainhat.nodeexport.inc',
   );
@@ -123,7 +147,7 @@ function rainhat_menu() {
     'title' => 'Edit a Node Export',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_node_export_form', 4),
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.nodeexport.inc',
   );
@@ -131,7 +155,7 @@ function rainhat_menu() {
     'title' => 'Delete a Node Export',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_node_export_delete', 4),
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.nodeexport.inc',
   );
@@ -141,7 +165,7 @@ function rainhat_menu() {
     'title' => 'Add a New Datastream Definition to a Node Export',
     'page callback' => 'rainhat_datastream_add',
     'page arguments' => array(4),
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.datastream.inc',
   );
@@ -149,7 +173,7 @@ function rainhat_menu() {
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_datastream_form', 4),
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.datastream.inc',
   );
@@ -157,9 +181,76 @@ function rainhat_menu() {
     'title' => 'Delete',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('rainhat_datastream_delete', 4),
-    'access arguments' => array('administer fedora connections node export'),
+    'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.datastream.inc',
+  );
+
+  //Node Import Administration ----------------------------------------------------------
+  $items['admin/structure/fedora/nodeimport'] = array(
+    'title' => 'Node Imports',
+    'access arguments' => array('administer fedora connections node export import'),
+    'page callback' => 'rainhat_node_import_list',
+    'file' => 'rainhat.nodeimport.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1,
+  );
+  $items['admin/structure/fedora/nodeimport/add'] = array(
+    'title' => 'New Node Import',
+    'page callback' => 'rainhat_node_import_add',
+    'access arguments' => array('administer fedora connections node export import'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'rainhat.nodeimport.inc',
+  );
+  $items['admin/structure/fedora/nodeimport/%rainhat_node_import/edit'] = array(
+    'title' => 'Edit a Node Import',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_node_import_form', 4),
+    'access arguments' => array('administer fedora connections node export import'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.nodeimport.inc',
+  );
+  $items['admin/structure/fedora/nodeimport/%rainhat_node_import/delete'] = array(
+    'title' => 'Delete a Node Import',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_node_import_delete', 4),
+    'access arguments' => array('administer fedora connections node export import'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.nodeimport.inc',
+  );
+  $items['admin/structure/fedora/nodeimport/%rainhat_node_import/run'] = array(
+    'title' => 'Run a Node Import',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_node_import_run_form', 4),
+    'access arguments' => array('administer fedora connections node export import'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.nodeimport.run.inc',
+  );
+  
+  //Field Import Administration -----------------------------------------------------------
+  $items['admin/structure/fedora/fieldimport/%rainhat_node_import/%/add'] = array(
+    'title' => 'Add a New Field Definition to a Node Import',
+    'page callback' => 'rainhat_field_import_add',
+    'page arguments' => array(4, 5),
+    'access arguments' => array('administer fedora connections node export import'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.fieldimport.inc',
+  );
+  $items['admin/structure/fedora/fieldimport/%rainhat_field_import/edit'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_field_import_form', 4),
+    'access arguments' => array('administer fedora connections node export import'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.fieldimport.inc',
+  );
+  $items['admin/structure/fedora/fieldimport/%rainhat_field_import/delete'] = array(
+    'title' => 'Delete',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rainhat_field_import_delete', 4),
+    'access arguments' => array('administer fedora connections node export import'),
+    'type' => MENU_CALLBACK,
+    'file' => 'rainhat.fieldimport.inc',
   );
 
   return $items;
@@ -179,9 +270,9 @@ function rainhat_permission() {
     'restrict access' => TRUE,
   );
 
-  $permissions['administer fedora connections node export'] = array(
-    'title' => t('Administer Fedora Repository Connections and Node Exports.'),
-    'description' => t('Add, Edit, and Remove connections to Fedora Repositories and the node export settings used to load the data into Fedora.'),
+  $permissions['administer fedora connections node export import'] = array(
+    'title' => t('Administer Fedora Repository Connections and Node Exports/Imports.'),
+    'description' => t('Add, Edit, and Remove connections to Fedora Repositories and the node export settings used to move data to and from Fedora'),
     'restrict access' => TRUE,
   );
 
@@ -214,6 +305,23 @@ function rainhat_datastream_load($id) {
 }
 
 /**
+ * Menu load callback for node imports.
+ */
+function rainhat_node_import_load($id) {
+  $node_imports = entity_load('rainhat_node_import', array($id));
+  return reset($node_imports);
+}
+
+
+/**
+ * Menu load callback for field imports.
+ */
+function rainhat_field_import_load($id) {
+  $fields = entity_load('rainhat_field_import', array($id));
+  return reset($fields);
+}
+
+/**
  * Implements hook_node_insert().
  */
 function rainhat_node_insert($node){
@@ -228,11 +336,6 @@ function rainhat_node_update($node){
   rainhat_update_hooked_nodes($node);
 }
 
-/**
- * Implements hook_node_insert().
- *
- * This hook runs after a node is saved into the database for the first time.
- */
 function rainhat_update_hooked_nodes($node){
 
   //Load the node export entities
@@ -265,7 +368,7 @@ function rainhat_update_hooked_nodes($node){
         $pid = $fc->ingestNewEmptyObject('new', $node_export->pid_prefix, $node->title)->data;
         $new_row = array('nid'=>$node->nid, 'pid'=>$pid, 'parent_node_export_id'=>$id);
         drupal_write_record('rainhat_nid_to_pid',  $new_row);
-        if (user_access('administer fedora connections node export')) {
+        if (user_access('administer fedora connections node export import')) {
           drupal_set_message(t('Nid: @nid is mapped to Pid: @pid.', array('@nid' => $node->nid, '@pid' => $pid)));
         }
       }
@@ -310,5 +413,14 @@ function rainhat_update_hooked_nodes($node){
   }
 }
  
+/**
+ * Implements hook_node_delete()
+ */
+function rainhat_node_delete($node){
+  
+    db_delete('rainhat_nid_to_pid')
+      ->condition('nid', $node->nid)
+      ->execute();
 
+}
 
