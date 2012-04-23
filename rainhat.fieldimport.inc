@@ -30,6 +30,7 @@ function rainhat_field_import_form($form, &$form_state, $field_import) {
       ->fetchObject();
       
   $fields = field_info_instances('node', $parent_node_import->hooked_type);
+  $fields['title'] = array('label'=>'Title');
   $field_label = $fields[$field_import->field_id]['label'];
   $node_types = node_type_get_types();
       

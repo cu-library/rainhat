@@ -66,8 +66,36 @@ class FedoraConnection {
     $options = array('controlGroup' => $controlGroup, 'dsLabel' => $label, 'dsLocation' => $location);
     $url = $this->buildURL($options, $pid . '/datastreams/' . $dsID);
     return $this->execCurl($url, $mime_type); 
-
   }
+  
+  function searchByPIDPrefix($pid, $token = NULL) {
+    $options = array('query' => 'pid'."~".$pid.'*', 'pid' => TRUE, 'resultFormat' => 'xml');
+    if ($token != NULL){
+      $options['sessionToken'] = $token;
+    }
+    
+    $url = $this->buildURL($options, NULL);
+    return $this->execCurl($url, '', 'GET'); 
+  }
+  
+  function getObjectXML($pid) {
+    $url = $this->buildURL(NULL, $pid . '/objectXML');
+    return $this->execCurl($url, '', 'GET'); 
+  }
+  
+  function getDatastreamsList($pid){
+    $options = array('format' => 'xml');
+    $url = $this->buildURL($options, $pid . '/datastreams');
+    return $this->execCurl($url, '', 'GET'); 
+  }
+  
+  function getDatastreamDissemination($pid, $dsid){
+    $options = array('format' => 'xml');
+    $url = $this->buildURL($options, $pid . '/datastreams/' . $dsid . '/content');
+    return $this->execCurl($url, '', 'GET'); 
+  }
+  
+  
 
 
   /**

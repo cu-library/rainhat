@@ -1,118 +1,103 @@
 <?php
 /**
  * @file
- * This file demonstrates how drupal must be doing something wrong. 
- * 6 functions for a 2 page form? 
- * Drupal is where KISS and DRY go to die. 
+ * This file contains the functions in which content from fedora is imported. 
  */
 
 function rainhat_node_import_run_form($form, &$form_state, $node_import) {
   
-  $form['#field_import'] = $field_import;
-
-  if (!empty($form_state['page']) && $form_state['page'] == 2) {
-    return rainhat_node_import_run_form_list_pids($form, $form_state);
-  }
-  
-  if (!empty($form_state['page']) && $form_state['page'] == 3) {
-    return rainhat_node_import_run_form_execute($form, $form_state);
-  }
-
-  // Otherwise we build page 1.
-  $form_state['page_num'] = 1;
+  $form['#node_import'] = $node_import;
 
   $form['search'] = array(
     '#type' => 'textfield',
-    '#title' => t('pid search'),
+    '#title' => t('PID Search'),
+    '#description' => t('The pid prefix to search for.'),
     '#size' => 40,
     '#maxlength' => 256,
     '#required' => TRUE,
-    '#default_value' => !empty($form_state['values']['search']) ? $form_state['values']['search'] : '',
+    '#default_value' => '',
   );
   $form['next'] = array(
     '#type' => 'submit',
-    '#value' => 'Next >>',
-    '#submit' => array('rainhat_node_import_run_form_next_submit'),
+    '#value' => 'Import Nodes',
   );
   return $form;
 }
 
-function rainhat_node_import_run_form_list_pids($form, &$form_state) {
-  $form['description'] = array(
-    '#type' => 'item',
-    '#title' => t('A basic multistep form (page 2)'),
-  );
+function rainhat_node_import_run_form_submit($form, &$form_state) {
+  $node_import = $form['#node_import'];
 
-  $form['color'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Favorite color'),
-    '#required' => TRUE,
-    '#default_value' => !empty($form_state['values']['color']) ? $form_state['values']['color'] : '',
-  );
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Submit'),
-    '#submit' => array('form_example_tutorial_8_page_two_submit'),
-  );
-  $form['back'] = array(
-    '#type' => 'submit',
-    '#value' => t('<< Back'),
-    '#submit' => array('form_example_tutorial_8_page_two_back'),
-    // We won't bother validating the required 'color' field, since they
-    // have to come back to this page to submit anyway.
-    '#limit_validation_errors' => array(),
-  );
-  return $form;
+  //Perform the pid search
+  $parent_fedora_connection = rainhat_fedora_connection_load($node_import->parent_fedora_connection_id);
+  $fedoraConnection = new FedoraConnection($parent_fedora_connection->url, $parent_fedora_connection->admin_username, $parent_fedora_connection->admin_password);
+  rainhat_node_import_perform_import($form_state['values']['search'], $fedoraConnection, NULL, $node_import);
+
+  $form_state['redirect'] = '/admin/content';
 }
 
-function form_example_tutorial_8_next_submit($form, &$form_state) {
-
-  // Values are saved for each page.
-  // to carry forward to subsequent pages in the form.
-  // and we tell FAPI to rebuild the form.
-  $form_state['page_values'][1] = $form_state['values'];
-
-  if (!empty($form_state['page_values'][2])) {
-    $form_state['values'] = $form_state['page_values'][2];
+function rainhat_node_import_perform_import($search, $fedoraConnection, $token, $node_import){
+  
+  $search_results = $fedoraConnection->searchByPIDPrefix($search, $token);
+  $results_xml = $search_results->data;
+  $results_xml_object = new SimpleXMLElement($results_xml);
+  
+  foreach ($results_xml_object->resultList->objectFields as $object_field){
+    $pid = (string) $object_field->pid;
+    
+    $simple_field_imports = db_select('rainhat_field_import', 'rfi')
+      ->fields('rfi')
+      ->condition('parent_node_import_id',  $node_import->id)
+      ->execute();
+     
+    $node = new stdClass(); 
+    $node->type = $node_import->hooked_type;
+    $node->language = LANGUAGE_NONE;
+    $node->title = 'Node Created Programmatically By Rainhat on ' . date('c');
+    global $user;
+    $node->name = $user->name;
+    node_object_prepare($node); 
+    node_save($node);
+        
+    foreach ($simple_field_imports as $field_import){
+      //First, process the scripted ingests
+      if($field_import->type == 'scripted'){
+        
+        $new_field = eval($field_import->php_script);
+        
+        if($field_import->field_id === 'title' AND !empty($new_field)){
+          $node->title = $new_field;
+          continue;
+        }
+        
+        if(is_array($new_field)){
+          dpm('isarray');
+          $field_id = $field_import->field_id;
+          $node->$field_id = array($node->language => $new_field);
+        }
+        else{
+          dpm($new_field);
+          $field_id = $field_import->field_id;
+          $node->$field_id = array($node->language => array($new_field));
+          dpm($node);
+        }
+        
+      }
+      //Next, process the file ingests
+      else{
+        
+      }
+      
+    }
+    
+    node_save($node);
+    
+  }
+  
+  if(isset($xml_object->listSession->token)){
+    $token = (string) $xml_object->listSession->token;
+    rainhat_node_import_perform_import($search, $fedoraConnection, $token, $node_import);
   }
 
-  // When form rebuilds, it will look at this to figure which page to build.
-  $form_state['page_num'] = 2;
-  $form_state['rebuild'] = TRUE;
 }
 
-/**
- * Back button handler submit handler.
- *
- * Since #limit_validation_errors = array() is set, values from page 2
- * will be discarded. We load the page 1 values instead.
- */
-function form_example_tutorial_8_page_two_back($form, &$form_state) {
-  $form_state['values'] = $form_state['page_values'][1];
-  $form_state['page_num'] = 1;
-  $form_state['rebuild'] = TRUE;
-}
 
-/**
- * The page 2 submit handler.
- *
- * This is the final submit handler. Gather all the data together and output
- * it in a drupal_set_message().
- */
-function form_example_tutorial_8_page_two_submit($form, &$form_state) {
-  // Normally, some code would go here to alter the database with the data
-  // collected from the form. Instead sets a message with drupal_set_message()
-  // to validate that the code worked.
-  $page_one_values = $form_state['page_values'][1];
-  drupal_set_message(t('The form has been submitted. name="@first @last", year of birth=@year_of_birth',
-  array('@first' => $page_one_values['first'], '@last' => $page_one_values['last'], '@year_of_birth' => $page_one_values['year_of_birth'])));
-
-  if (!empty($page_one_values['first2'])) {
-    drupal_set_message(t('Second name: name="@first @last", year of birth=@year_of_birth',
-    array('@first' => $page_one_values['first2'], '@last' => $page_one_values['last2'], '@year_of_birth' => $page_one_values['year_of_birth2'])));
-  }
-  drupal_set_message(t('And the favorite color is @color', array('@color' => $form_state['values']['color'])));
-
-  // If we wanted to redirect on submission, set $form_state['redirect']
-  // $form_state['redirect'] = 'node'; // Redirects the user to /node.
-}

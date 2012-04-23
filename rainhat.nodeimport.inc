@@ -38,10 +38,28 @@ function rainhat_node_import_list() {
     $row[] = check_plain($parent_connection->name);
     $row[] = check_plain($hooked_type_name);
 
+
+    $field_list = "";
+     
+    //Add the title field
+    $field_list .= 'Title';
+    $field_import = db_select('rainhat_field_import', 'rfi')
+      ->fields('rfi')
+      ->condition('parent_node_import_id', $node_import->id)
+      ->condition('field_id', 'title')
+      ->execute()
+      ->fetchObject();
+    if($field_import === FALSE){
+      $field_list .= ' - ' . l(t('Add Field Import'), 'admin/config/system/fedora/fieldimport/'.$id.'/'.'title'.'/add');
+    } else {      
+      $field_list .= ' - ' . l(t('Edit'), 'admin/config/system/fedora/fieldimport/' . $field_import->id . '/edit');
+      $field_list .= ', ' . l(t('Delete'), 'admin/config/system/fedora/fieldimport/' . $field_import->id . '/delete');      
+    }
+    $field_list .= '<br />';
+        
     //List the fields
     $fields = field_info_instances('node', $node_import->hooked_type);
 
-    $field_list = "";
     foreach ($fields as $field) {
       $field_list .= $field['label'];
       $field_import = db_select('rainhat_field_import', 'rfi')
