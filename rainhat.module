@@ -55,19 +55,6 @@ function rainhat_entity_info() {
     ),
   );
   
-  
-  $return['rainhat_field_import'] = array(
-    'label' => t('Field Import Definition'),
-    'controller class' => 'RainhatFieldImportController',
-    'base table' => 'rainhat_field_import',
-    'fieldable' => FALSE,
-    'entity keys' => array(
-      'id' => 'id',
-      'label' => 'field_id',
-    ),
-  );
-
-
   return $return;
 }
 
@@ -223,32 +210,6 @@ function rainhat_menu() {
     'access arguments' => array('administer fedora connections node export import'),
     'type' => MENU_CALLBACK,
     'file' => 'rainhat.nodeimport.run.inc',
-  );
-  
-  //Field Import Administration -----------------------------------------------------------
-  $items['admin/config/system/fedora/fieldimport/%rainhat_node_import/%/add'] = array(
-    'title' => 'Add a New Field Definition to a Node Import',
-    'page callback' => 'rainhat_field_import_add',
-    'page arguments' => array(5, 6),
-    'access arguments' => array('administer fedora connections node export import'),
-    'type' => MENU_CALLBACK,
-    'file' => 'rainhat.fieldimport.inc',
-  );
-  $items['admin/config/system/fedora/fieldimport/%rainhat_field_import/edit'] = array(
-    'title' => 'Edit',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_field_import_form', 5),
-    'access arguments' => array('administer fedora connections node export import'),
-    'type' => MENU_CALLBACK,
-    'file' => 'rainhat.fieldimport.inc',
-  );
-  $items['admin/config/system/fedora/fieldimport/%rainhat_field_import/delete'] = array(
-    'title' => 'Delete',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('rainhat_field_import_delete', 5),
-    'access arguments' => array('administer fedora connections node export import'),
-    'type' => MENU_CALLBACK,
-    'file' => 'rainhat.fieldimport.inc',
   );
 
   return $items;

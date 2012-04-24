@@ -37,60 +37,12 @@ function rainhat_node_import_run_form_submit($form, &$form_state) {
 
 function rainhat_node_import_perform_import($search, $fedoraConnection, $token, $node_import){
   
-  $search_results = $fedoraConnection->searchByPIDPrefix($search, $token);
-  $results_xml = $search_results->data;
-  $results_xml_object = new SimpleXMLElement($results_xml);
+  $search_results = $fedoraConnection->searchByPIDPrefix($search, $token)->data;
+  $results_xml_object = new SimpleXMLElement($search_results);
   
   foreach ($results_xml_object->resultList->objectFields as $object_field){
     $pid = (string) $object_field->pid;
-    
-    $simple_field_imports = db_select('rainhat_field_import', 'rfi')
-      ->fields('rfi')
-      ->condition('parent_node_import_id',  $node_import->id)
-      ->execute();
-     
-    $node = new stdClass(); 
-    $node->type = $node_import->hooked_type;
-    $node->language = LANGUAGE_NONE;
-    $node->title = 'Node Created Programmatically By Rainhat on ' . date('c');
-    global $user;
-    $node->name = $user->name;
-    node_object_prepare($node); 
-    node_save($node);
-        
-    foreach ($simple_field_imports as $field_import){
-      //First, process the scripted ingests
-      if($field_import->type == 'scripted'){
-        
-        $new_field = eval($field_import->php_script);
-        
-        if($field_import->field_id === 'title' AND !empty($new_field)){
-          $node->title = $new_field;
-          continue;
-        }
-        
-        if(is_array($new_field)){
-          dpm('isarray');
-          $field_id = $field_import->field_id;
-          $node->$field_id = array($node->language => $new_field);
-        }
-        else{
-          dpm($new_field);
-          $field_id = $field_import->field_id;
-          $node->$field_id = array($node->language => array($new_field));
-          dpm($node);
-        }
-        
-      }
-      //Next, process the file ingests
-      else{
-        
-      }
-      
-    }
-    
-    node_save($node);
-    
+    eval($node_import->php_script);  
   }
   
   if(isset($xml_object->listSession->token)){

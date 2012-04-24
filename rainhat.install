@@ -258,6 +258,10 @@ function rainhat_schema() {
         'type' => 'varchar',
         'length' => 255,
       ),
+      'php_script' => array(
+        'description' => 'php_script',
+        'type' => 'text',
+      ),
     ),
     'unique keys' => array(
       'name' => array('name'),
@@ -269,56 +273,7 @@ function rainhat_schema() {
       ),
     ),
     'primary key' => array('id'),
-  );
-  
-  
-  $schema['rainhat_field_import'] = array(
-    'description' => 'Field Import Definition',
-    'fields' => array(
-      'id' => array(
-        'description' => 'id',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'field_id' => array(
-        'description' => 'datastream_id',
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'type' => array(
-        'description' => 'type',
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'php_script' => array(
-        'description' => 'php_script',
-        'type' => 'text',
-      ),
-      'datastream_id' => array(
-        'description' => 'datastream_id',
-        'type' => 'varchar',
-        'length' => 255,
-        'default' => '',
-      ),
-      'parent_node_import_id' => array(
-        'description' => 'parent node import id {rainhat_node_import}.id',
-        'type' => 'int',
-      ),
-    ),
-    'foreign keys' => array(
-      'parent_node_import_id' => array(
-        'table' => 'rainhat_node_import',
-        'columns' => array('rainhat_node_import' => 'id'),
-      ),
-    ),
-    'primary key' => array('id'),
-  );
-  
+  );  
 
   return $schema;
 }

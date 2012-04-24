@@ -90,9 +90,14 @@ class FedoraConnection {
   }
   
   function getDatastreamDissemination($pid, $dsid){
-    $options = array('format' => 'xml');
-    $url = $this->buildURL($options, $pid . '/datastreams/' . $dsid . '/content');
+    $url = $this->buildURL(NULL, $pid . '/datastreams/' . $dsid . '/content');
     return $this->execCurl($url, '', 'GET'); 
+  }
+  
+  function downloadDatastreamDissemination($pid, $dsid, $file){
+    $options = array('download' => TRUE);
+    $url = $this->buildURL($options, $pid . '/datastreams/' . $dsid . '/content');
+    return $this->execCurlDownload($url, $file); 
   }
   
   
@@ -134,6 +139,26 @@ class FedoraConnection {
     curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC); 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($ch, CURLOPT_USERPWD, $this->username . ":" . $this->password);
+   
+    $data = curl_exec($ch);
+    $errorno = curl_getinfo($ch, CURLINFO_HTTP_CODE);    
+    curl_close ($ch);
+    
+    $return = new stdClass();
+    $return->data = $data;
+    $return->errorno = $errorno;
+    return $return;    
+  }
+  
+  protected function execCurlDownload($url, $file){
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');      
+    $fp = fopen($file, 'w');
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC); 
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_USERPWD, $this->username . ":" . $this->password);
+    curl_setopt($ch, CURLOPT_FILE, $fp);
    
     $data = curl_exec($ch);
     $errorno = curl_getinfo($ch, CURLINFO_HTTP_CODE);    

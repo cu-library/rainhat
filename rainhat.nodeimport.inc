@@ -14,7 +14,7 @@ function rainhat_node_import_list() {
   // entity_load() called with one argument loads all entities of the specified type.
   $node_imports = entity_load('rainhat_node_import');
 
-  $header = array(t('Name'), t('Parent Fedora Connection'), t('Hooked Type'), t('Fields'), t('Administer'));
+  $header = array(t('Name'), t('Parent Fedora Connection'), t('Hooked Type'), t('Administer'));
 
   // Sort the entries alphabetically by name, since entity_load() returns them unsorted.
   uasort($node_imports, create_function('$a,$b', 'return strcmp($a->name, $b->name);'));
@@ -37,48 +37,6 @@ function rainhat_node_import_list() {
     $row[] = check_plain($node_import->name);
     $row[] = check_plain($parent_connection->name);
     $row[] = check_plain($hooked_type_name);
-
-
-    $field_list = "";
-     
-    //Add the title field
-    $field_list .= 'Title';
-    $field_import = db_select('rainhat_field_import', 'rfi')
-      ->fields('rfi')
-      ->condition('parent_node_import_id', $node_import->id)
-      ->condition('field_id', 'title')
-      ->execute()
-      ->fetchObject();
-    if($field_import === FALSE){
-      $field_list .= ' - ' . l(t('Add Field Import'), 'admin/config/system/fedora/fieldimport/'.$id.'/'.'title'.'/add');
-    } else {      
-      $field_list .= ' - ' . l(t('Edit'), 'admin/config/system/fedora/fieldimport/' . $field_import->id . '/edit');
-      $field_list .= ', ' . l(t('Delete'), 'admin/config/system/fedora/fieldimport/' . $field_import->id . '/delete');      
-    }
-    $field_list .= '<br />';
-        
-    //List the fields
-    $fields = field_info_instances('node', $node_import->hooked_type);
-
-    foreach ($fields as $field) {
-      $field_list .= $field['label'];
-      $field_import = db_select('rainhat_field_import', 'rfi')
-        ->fields('rfi')
-        ->condition('parent_node_import_id', $node_import->id)
-        ->condition('field_id', $field['field_name'])
-        ->execute()
-        ->fetchObject();
-      if($field_import === FALSE){
-        $field_list .= ' - ' . l(t('Add Field Import'), 'admin/config/system/fedora/fieldimport/'.$id.'/'.$field['field_name'].'/add');
-      } else {      
-        $field_list .= ' - ' . l(t('Edit'), 'admin/config/system/fedora/fieldimport/' . $field_import->id . '/edit');
-        $field_list .= ', ' . l(t('Delete'), 'admin/config/system/fedora/fieldimport/' . $field_import->id . '/delete');      
-      }
-
-      $field_list .= '<br />';
-    }
-
-    $row[] = $field_list;
 
     $act = l(t('Edit'), "admin/config/system/fedora/nodeimport/$id/edit");
     $act .= ', ';
@@ -169,6 +127,13 @@ function rainhat_node_import_form($form, &$form_state, $node_import) {
     '#options' => $hooked_type_options,
     '#default_value' => check_plain($node_import->hooked_type),
   );
+  
+  $form['php_script'] = array(
+    '#type' => 'textarea',
+    '#title' => t('PHP Script'),
+    '#default_value' => $node_import->php_script,
+    '#rows' => 20,
+  );
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -209,6 +174,7 @@ function rainhat_node_import_form_submit($form, &$form_state) {
   $node_import->name = $form_state['values']['name'];
   $node_import->parent_fedora_connection_id = $form_state['values']['parent_fedora_connection'];
   $node_import->hooked_type = $form_state['values']['hooked_type'];
+  $node_import->php_script = $form_state['values']['php_script'];
 
   if (isset($node_import->id)) {
     drupal_set_message(t('Node Import successfully edited.'));

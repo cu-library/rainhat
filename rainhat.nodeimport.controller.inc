@@ -18,6 +18,7 @@ class RainhatNodeImportController extends DrupalDefaultEntityController {
     $node_import->name = '';
     $node_import->parent_fedora_connection_id = 0;
     $node_import->hooked_type = '';
+    $node_import->php_script = '';
     return $node_import;
   }
 
