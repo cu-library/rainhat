@@ -15,4 +15,4 @@ files[] = rainhat.nodeimport.controller.inc
 files[] = rainhat.fieldimport.controller.inc
 files[] = rainhat.fedoraapi.inc
 
-configure = admin/config/system/rainhat
+configure = admin/config/system/fedora
